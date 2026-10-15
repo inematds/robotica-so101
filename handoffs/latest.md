@@ -3,9 +3,61 @@
 Cada linha é um assunto em andamento: leia o snapshot do assunto que for continuar. Gravado por handoff-grava.py.
 
 <!-- handoff-indice:inicio -->
-- nenhum
+- `guia-portal-so101` · handoffs/history/2026-10-15T212305Z-guia-portal-so101.md · 15/10 18:23
 <!-- handoff-indice:fim -->
 
 ---
 
-Nenhum trabalho aberto.
+Cópia integral do snapshot mais recente (handoffs/history/2026-10-15T212305Z-guia-portal-so101.md):
+
+# Handoff — 2026-10-15 — Guia PT/EN/ES do robotica-so101 e publicação no portal (em andamento)
+
+## Projeto e escopo
+robotica-so101, raiz ~/projetos/robotica-so101. Usuário pediu: "salve tudo o resto e publique no portal". Fase 0 já commitada (491a1f0). Fluxo: skill atualiza-portal → projeto sem guia → projetos-landing-guia.
+
+## Objetivo atual
+Guia em guia/ (PT/EN/ES) no GitHub Pages, READMEs trilingues, depois card no portal + PRO via publica.sh.
+
+## Estado aceito
+- [confirmed] guia/index.html (PT) escrito; capa/capa.png e guia/assets/hero.png gerados (Codex)
+- [confirmed] Banners grade PT/EN/ES ok; imagens da simulação e clip-tres-objetos.mp4 (656 KB) em guia/assets
+- [confirmed] README.md com banner, seletor, "O que é" e link do guia
+- [confirmed] .github/workflows/pages.yml e .nojekyll criados
+- [confirmed] Portal editado sem commit: Portal.tsx (communityProjects robotica-so101), courses.ts (projectUpdatesData topo), translated-courses.ts (id 10144 en/es); inemapro-mono enrichment.json (projeto:robotica-so101-guia, formato compacto preservado)
+
+## Proposto / tentado, não confirmado
+- [?] Banners live PT/EN/ES sendo regenerados sem selo (task b3lf1ye7w): o selo azul sobrepunha o título
+- [?] Traduções guia/en, guia/es, README.en.md, README.es.md: dois subagentes rodando
+
+## Decisões e restrições
+- Bloco "Área Robot" da home do portal não alterado (fora do roteiro da skill)
+- Push de commit com .github/workflows via SSH se HTTPS recusar (escopo workflow do inematds)
+
+## Arquivos alterados
+- guia/**, capa/capa.png, README*.md, .github/workflows/pages.yml, .nojekyll (sem commit)
+- Fora do projeto: ~/projetos/portal/src/components/Portal.tsx, ~/projetos/portal/src/data/courses.ts, ~/projetos/portal/src/data/translated-courses.ts, ~/projetos/inemapro-mono/packages/content-base/enrichment.json (sem commit). next-env.d.ts e tsconfig.tsbuildinfo do portal já estavam sujos antes (não meus)
+
+## Memória e regras duráveis tocadas
+- nenhuma
+
+## Verificação
+- Não rodado ainda: Pages 200, publica.sh, testes do portal
+
+## Estado em execução
+- Processos: banners b3lf1ye7w; 2 subagentes de tradução
+- Servidores / portas: nenhum
+- Worktrees / branches abertos: nenhum
+
+## Perguntas abertas e adiados
+- nenhuma
+
+## Próxima ação exata
+Conferir banners live e traduções; commit+push robotica-so101; habilitar Pages (build_type=workflow); verificar 3 URLs 200; no portal npm test/build; publica.sh "robotica-so101"; commit+push só translated-courses já vai no portal.
+
+## Mapa de retomada
+- guia/index.html
+- ~/.claude/skills/atualiza-portal/SKILL.md
+- ~/.claude/skills/projetos-landing-guia/SKILL.md
+
+## Checagem de compartilhamento
+- Sem segredos, tokens, cookies, dados pessoais ou endpoints privados: sim
