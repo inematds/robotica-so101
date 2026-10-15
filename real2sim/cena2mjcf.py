@@ -2,7 +2,7 @@
 
 A cena descreve a mesa e os objetos em metros, no referencial do robô:
 x para frente (longe da base), y para a esquerda, z para cima, origem na base do braço
-sobre o tampo. O braço é o Franka Panda do MuJoCo Menagerie.
+sobre o tampo. O braço vem de `robos.py` (hoje o SO-101 do MuJoCo Menagerie).
 """
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ import sys
 from pathlib import Path
 
 import mujoco
+import numpy as np
 
-RAIZ = Path(__file__).resolve().parent.parent
-PANDA = RAIZ / "vendor/menagerie/franka_emika_panda/panda.xml"
+from .robos import SO101, Robo
 
 CORES = {
     "vermelho": (0.85, 0.15, 0.12), "azul": (0.15, 0.35, 0.85), "verde": (0.2, 0.7, 0.25),
@@ -38,8 +38,9 @@ def carregar_cena(caminho: str | Path) -> dict:
     return cena
 
 
-def validar_cena(cena: dict) -> None:
+def validar_cena(cena: dict, robo: Robo = SO101) -> None:
     """Recusa cena fisicamente impossível para o braço (fora do alcance, grande demais)."""
+    rmin, rmax = robo.alcance
     nomes = set()
     for o in cena["objetos"]:
         n = o["nome"]
@@ -48,8 +49,9 @@ def validar_cena(cena: dict) -> None:
         nomes.add(n)
         x, y = o["pos"][:2]
         r = (x * x + y * y) ** 0.5
-        if not 0.25 <= r <= 0.8:
-            raise ValueError(f"{n}: a {r:.2f} m da base, fora do alcance do Panda (0,25–0,80 m)")
+        if not rmin <= r <= rmax:
+            raise ValueError(f"{n}: a {r:.2f} m da base, fora do alcance do {robo.nome} "
+                             f"({rmin:.2f}–{rmax:.2f} m)".replace(".", ","))
         if o.get("tipo", "caixa") not in ("caixa", "cilindro", "esfera", "recipiente"):
             raise ValueError(f"{n}: tipo desconhecido {o.get('tipo')}")
     t = cena.get("tarefa", {})
@@ -58,48 +60,41 @@ def validar_cena(cena: dict) -> None:
             raise ValueError(f"tarefa.{chave} = {t[chave]} não existe na cena")
 
 
-def montar_spec(cena: dict) -> mujoco.MjSpec:
-    spec = mujoco.MjSpec.from_file(str(PANDA))
+def montar_spec(cena: dict, robo: Robo = SO101) -> mujoco.MjSpec:
+    spec = mujoco.MjSpec.from_file(str(robo.xml))
     spec.option.timestep = 0.002
     spec.option.impratio = 10
     spec.option.cone = mujoco.mjtCone.mjCONE_ELLIPTIC
     spec.visual.global_.offwidth = 1920
     spec.visual.global_.offheight = 1080
     spec.visual.headlight.ambient = [0.35, 0.35, 0.35]
-
-    # garra: o modelo do Menagerie aperta ~3 N; a garra real do Panda faz 70 N contínuos.
-    # Rigidez 10x (aperto ~30 N), mesma faixa de comando 0-255.
-    garra = spec.actuator("actuator8")
-    garra.gainprm[0] = 0.04 / 255 * 1000
-    garra.biasprm[1] = -1000
-    garra.biasprm[2] = -60
+    spec.camera(robo.camera_pulso).name = "pulso"
 
     mundo = spec.worldbody
-    # ponto de trabalho (TCP) entre os dedos
-    mao = spec.body("hand")
-    mao.add_site(name="tcp", pos=[0, 0, 0.1034], size=[0.006] * 3, rgba=[1, 0.2, 0.2, 0.0])
-
     mesa = cena.get("mesa", {})
-    larg, prof = mesa.get("largura", 1.2), mesa.get("profundidade", 0.8)
-    cx = mesa.get("centro_x", 0.5)
+    larg, prof = mesa.get("largura", 0.8), mesa.get("profundidade", 0.5)
+    cx = mesa.get("centro_x", 0.22)
     tampo = cor_rgba(mesa.get("cor", "bege"))
+    atras = 0.1  # o tampo passa um pouco por trás da base do braço
+    tx, meio_x = (cx - prof / 2 - atras + cx + prof / 2) / 2, prof / 2 + atras / 2
     mundo.add_geom(name="chao", type=mujoco.mjtGeom.mjGEOM_PLANE, size=[3, 3, 0.05],
                    pos=[0, 0, -0.75], rgba=[0.18, 0.18, 0.2, 1])
-    mundo.add_geom(name="tampo", type=mujoco.mjtGeom.mjGEOM_BOX, size=[prof / 2 + 0.15, larg / 2, 0.02],
-                   pos=[cx - 0.075, 0, -0.02], rgba=tampo, friction=[1.0, 0.01, 0.001])
+    mundo.add_geom(name="tampo", type=mujoco.mjtGeom.mjGEOM_BOX, size=[meio_x, larg / 2, 0.02],
+                   pos=[tx, 0, -0.02], rgba=tampo, friction=[1.0, 0.01, 0.001])
     for sx in (-1, 1):
         for sy in (-1, 1):
-            mundo.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.03, 0.03, 0.365],
-                           pos=[cx - 0.075 + sx * (prof / 2 + 0.1), sy * (larg / 2 - 0.05), -0.405],
+            mundo.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.025, 0.025, 0.365],
+                           pos=[tx + sx * (meio_x - 0.05), sy * (larg / 2 - 0.05), -0.405],
                            rgba=[0.3, 0.25, 0.2, 1], contype=0, conaffinity=0)
-    mundo.add_light(pos=[0.5, -0.6, 1.8], dir=[0, 0.3, -1], diffuse=[0.75, 0.75, 0.75], castshadow=True)
-    mundo.add_light(pos=[0.9, 0.8, 1.5], dir=[-0.3, -0.4, -1], diffuse=[0.35, 0.35, 0.35])
+    mundo.add_light(pos=[0.3, -0.5, 1.2], dir=[0, 0.4, -1], diffuse=[0.75, 0.75, 0.75], castshadow=True)
+    mundo.add_light(pos=[0.6, 0.6, 1.0], dir=[-0.4, -0.4, -1], diffuse=[0.35, 0.35, 0.35])
 
-    # câmeras: vista geral, de cima (como a foto) e no pulso
-    mundo.add_camera(name="geral", pos=[1.55, -0.95, 0.85], xyaxes=[0.53, 0.85, 0, -0.33, 0.21, 0.92])
-    mundo.add_camera(name="cima", pos=[cx, 0, 1.35], xyaxes=[0, -1, 0, 1, 0, 0])
-    mundo.add_camera(name="frente", pos=[1.6, 0, 0.55], xyaxes=[0, 1, 0, -0.3, 0, 0.95])
-    mao.add_camera(name="pulso", pos=[0.07, 0, 0.03], xyaxes=[-0.82, 0, -0.57, 0, 1, 0], fovy=80)
+    # câmeras na escala do SO-101: vista geral, de cima (como a foto) e de frente;
+    # a do pulso já vem no modelo (renomeada para "pulso")
+    centro = [cx, 0, 0.03]
+    mundo.add_camera(name="geral", pos=[cx + 0.55, -0.45, 0.42], xyaxes=olhar([cx + 0.55, -0.45, 0.42], centro))
+    mundo.add_camera(name="cima", pos=[cx, 0, 0.85], xyaxes=[0, -1, 0, 1, 0, 0])
+    mundo.add_camera(name="frente", pos=[cx + 0.6, 0, 0.3], xyaxes=olhar([cx + 0.6, 0, 0.3], [cx, 0, 0.06]))
 
     for o in cena["objetos"]:
         adicionar_objeto(spec, mundo, o)
@@ -164,8 +159,18 @@ def quat_yaw(yaw: float) -> list[float]:
     return [math.cos(yaw / 2), 0, 0, math.sin(yaw / 2)]
 
 
-def compilar(cena: dict) -> tuple[mujoco.MjModel, str]:
-    spec = montar_spec(cena)
+def olhar(pos, alvo) -> list[float]:
+    """xyaxes de uma câmera em `pos` olhando para `alvo`, com o horizonte nivelado."""
+    f = np.asarray(alvo, float) - np.asarray(pos, float)
+    f /= np.linalg.norm(f)
+    x = np.cross(f, [0, 0, 1.0])
+    x /= np.linalg.norm(x)
+    y = np.cross(x, f)
+    return [*x.round(4), *y.round(4)]
+
+
+def compilar(cena: dict, robo: Robo = SO101) -> tuple[mujoco.MjModel, str]:
+    spec = montar_spec(cena, robo)
     modelo = spec.compile()
     return modelo, spec.to_xml()
 

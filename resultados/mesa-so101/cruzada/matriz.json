@@ -1,0 +1,96 @@
+[
+ {
+  "cena": "mesa-so101",
+  "plano": "cubo→bola→pote",
+  "modo": "medida",
+  "completos": 18,
+  "taxa": 0.9,
+  "aprovado": true,
+  "falhas": {
+   "cubo_vermelho": {
+    "o objeto escorregou ao subir": 1
+   },
+   "potinho_azul": {
+    "objeto caiu fora do destino": 1
+   }
+  }
+ },
+ {
+  "cena": "mesa-so101",
+  "plano": "cubo→bola→pote",
+  "modo": "tamanho ±15%",
+  "completos": 18,
+  "taxa": 0.9,
+  "aprovado": true,
+  "falhas": {
+   "bola_tenis": {
+    "não alcançou a posição acima do objeto": 1
+   },
+   "potinho_azul": {
+    "objeto caiu fora do destino": 1
+   }
+  }
+ },
+ {
+  "cena": "mesa-so101",
+  "plano": "cubo→bola→pote",
+  "modo": "pior caso",
+  "completos": 6,
+  "taxa": 0.3,
+  "aprovado": false,
+  "falhas": {
+   "cubo_vermelho": {
+    "o objeto escorregou ao subir": 2
+   },
+   "bola_tenis": {
+    "perdeu o objeto no transporte": 1
+   },
+   "potinho_azul": {
+    "objeto caiu fora do destino": 11
+   }
+  }
+ },
+ {
+  "cena": "mesa-so101",
+  "plano": "pote→bola→cubo",
+  "modo": "medida",
+  "completos": 16,
+  "taxa": 0.8,
+  "aprovado": false,
+  "falhas": {
+   "cubo_vermelho": {
+    "objeto caiu fora do destino": 4
+   }
+  }
+ },
+ {
+  "cena": "mesa-so101",
+  "plano": "pote→bola→cubo",
+  "modo": "tamanho ±15%",
+  "completos": 10,
+  "taxa": 0.5,
+  "aprovado": false,
+  "falhas": {
+   "cubo_vermelho": {
+    "objeto caiu fora do destino": 10
+   }
+  }
+ },
+ {
+  "cena": "mesa-so101",
+  "plano": "pote→bola→cubo",
+  "modo": "pior caso",
+  "completos": 2,
+  "taxa": 0.1,
+  "aprovado": false,
+  "falhas": {
+   "bola_tenis": {
+    "objeto caiu fora do destino": 4,
+    "não alcançou a posição acima do objeto": 1
+   },
+   "cubo_vermelho": {
+    "objeto caiu fora do destino": 13
+   }
+  }
+ }
+]

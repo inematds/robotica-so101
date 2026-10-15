@@ -53,6 +53,14 @@ Cada fase tem um critério de pronto no formato `comando → saída esperada`.
 
 ### Fase 0 — Gêmeo do SO-101 no simulador (sem o braço; dá para começar já)
 
+**Feita em 15/10/2026.** Cena `exemplos/mesa-so101/cena.json` (cubo 3 cm, bola de tênis, potinho 4 cm,
+bandeja 20×14×3): 50/50 episódios para cada objeto; plano com os três na bandeja 18/20 na prova com
+medida certa e 18/20 com ±15% de tamanho, mas só 6/20 no pior caso (bandeja 15% menor: os três quase não
+cabem). Medido no modelo: a garra reto para baixo alcança 15–30 cm da base até ~8 cm de altura; mais alto
+ou mais longe, inclina. A pergunta da Fase 0 sobre alcance está respondida: perto (<15 cm) e longe
+(>30 cm) a garra precisa inclinar. Ficou para depois: lata deitada (só existe no Panda).
+Como o projeto agora tem um robô só, `--robo so101` não existe: o critério roda sem ele.
+
 O modelo oficial já está baixado em `vendor/menagerie/robotstudio_so101/` (Apache-2.0).
 
 1. Tirar o Panda "fixo" do código: um arquivo de configuração por robô (`real2sim/robos.py`) com

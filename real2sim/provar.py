@@ -20,8 +20,9 @@ from .cena2mjcf import compilar
 from .episodios import variar
 from .foto2cena import extrair_json
 from .gerador import Gerador, ir_para_casa
+from .robos import SO101
 
-PROMPT_PLANO = """Você controla um braço robótico com garra (abertura máxima 8 cm) diante desta mesa:
+PROMPT_PLANO = """Você controla um braço robótico pequeno (SO-101: garra de até {garra:.0f} cm, carga de até {carga:.0f} g) diante desta mesa:
 {cena}
 
 Pedido do usuário: "{pedido}"
@@ -34,7 +35,8 @@ Responda SOMENTE com JSON: {{"passos": [{{"pegar": "", "destino": ""}}], "obs": 
 
 def planejar(cena: dict, pedido: str, modelo: str | None = None, timeout: int = 600, motor: str = "codex") -> dict:
     resumo = [{k: o[k] for k in ("nome", "tipo", "tamanho", "pos", "cor")} for o in cena["objetos"]]
-    prompt = PROMPT_PLANO.format(cena=json.dumps(resumo, ensure_ascii=False), pedido=pedido)
+    prompt = PROMPT_PLANO.format(cena=json.dumps(resumo, ensure_ascii=False), pedido=pedido,
+                                 garra=SO101.abertura_max * 100, carga=SO101.carga_max * 1000)
     if motor in ("gemini", "openrouter"):
         from .foto2cena import perguntar
         plano = extrair_json(perguntar(motor, prompt, None, modelo))
@@ -78,10 +80,19 @@ def marcar_deitar(cena: dict, passos: list[dict]) -> list[dict]:
     return novos
 
 
+def _largura(o: dict, eixo: int) -> float:
+    """Quanto o objeto ocupa ao longo de um eixo do recipiente (caixa girada: a diagonal)."""
+    t = o["tamanho"]
+    if o["tipo"] == "caixa":
+        return float(np.hypot(t[0], t[1]))
+    return float(t[0])
+
+
 def distribuir_vagas(cena: dict, passos: list[dict]) -> list[dict]:
-    """Objetos que vão para o mesmo recipiente ganham lugares diferentes ao longo do lado maior.
+    """Objetos que vão para o mesmo recipiente ganham lugares diferentes ao longo do lado maior,
+    cada um ocupando a sua largura, com folgas iguais entre eles e as paredes.
     Se algum vai deitado (ao longo de x), as vagas ficam lado a lado em y."""
-    tam = {o["nome"]: o["tamanho"] for o in cena["objetos"]}
+    obj = {o["nome"]: o for o in cena["objetos"]}
     por_destino: dict[str, list[dict]] = {}
     novos = [dict(p) for p in passos]
     for p in novos:
@@ -90,23 +101,16 @@ def distribuir_vagas(cena: dict, passos: list[dict]) -> list[dict]:
         n = len(lista)
         if n == 1:
             continue
-        lx, ly = tam[destino][0], tam[destino][1]
-        if any(p.get("deitar") for p in lista):
-            # vaga pelo tamanho: cada objeto ocupa a sua largura em y, com folgas iguais entre eles
-            interno = ly - 2 * 0.006
-            larg = [tam[p["pegar"]][0] if len(tam[p["pegar"]]) < 3 else tam[p["pegar"]][1] for p in lista]
-            folga = max((interno - sum(larg)) / (n + 1), 0.0)
-            y = -interno / 2
-            for p, w in zip(lista, larg):
-                y += folga + w / 2
-                p.setdefault("vaga", [0.0, round(y, 4)])
-                y += w / 2
-            continue
-        eixo = 0 if lx >= ly else 1
-        util = (lx if eixo == 0 else ly) - 0.07  # sobra das paredes e da garra
-        for k, p in enumerate(lista):
-            off = -util / 2 + util * k / (n - 1)
-            p.setdefault("vaga", [off, 0.0] if eixo == 0 else [0.0, off])
+        lx, ly = obj[destino]["tamanho"][0], obj[destino]["tamanho"][1]
+        eixo = 1 if any(p.get("deitar") for p in lista) or ly > lx else 0
+        interno = (lx if eixo == 0 else ly) - 2 * 0.006
+        larg = [_largura(obj[p["pegar"]], eixo) for p in lista]
+        folga = max((interno - sum(larg)) / (n + 1), 0.0)
+        pos = -interno / 2
+        for p, w in zip(lista, larg):
+            pos += folga + w / 2
+            p.setdefault("vaga", [round(pos, 4), 0.0] if eixo == 0 else [0.0, round(pos, 4)])
+            pos += w / 2
     return novos
 
 

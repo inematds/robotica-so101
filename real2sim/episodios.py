@@ -2,7 +2,7 @@
 
 Cada episódio sorteia pequenas variações (posição, giro, massa, atrito dos objetos), roda o
 gerador em malha fechada e grava:
-  ep_NNNN.npz   série temporal a 50 Hz: juntas, comando, garra, posição do TCP e do objeto, fase
+  ep_NNNN.npz   série temporal a 50 Hz: juntas e comando (5 do braço + garra, em rad), posição do TCP e do objeto, fase
                 (+ imagens 128x128 das câmeras 'cima' e 'pulso' a 10 Hz com --imagens)
   ep_NNNN.json  anotação hierárquica em 4 níveis (objetivo > subtarefa > primitiva > eventos) e
                 selo de qualidade (o episódio que falhou fica marcado e não entra no treino)
@@ -20,11 +20,12 @@ import numpy as np
 
 from .cena2mjcf import compilar, validar_cena
 from .gerador import Gerador, ir_para_casa
+from .robos import SO101
 
 FASES = ["aproximar", "descer", "fechar", "subir", "levar", "baixar", "abrir", "recuar", "assentar"]
 
 
-GARRA_MAX = 0.078  # abertura útil da garra do Panda (8 cm menos folga)
+GARRA_MAX = SO101.abertura_max  # abertura útil da garra (SO-101: 9 cm, com folga)
 
 
 def variar_tamanho(o: dict, fator: float) -> None:
@@ -35,6 +36,16 @@ def variar_tamanho(o: dict, fator: float) -> None:
         if horiz > GARRA_MAX:
             tam = [t * GARRA_MAX / horiz for t in tam]
     o["tamanho"] = tam
+
+
+def _raio(o: dict) -> float:
+    t = o["tamanho"]
+    return float(np.hypot(t[0], t[1])) / 2 if o.get("tipo") in ("caixa", "recipiente") else t[0] / 2
+
+
+def _longe(a: dict, b: dict, folga: float = 0.01) -> bool:
+    d = float(np.hypot(a["pos"][0] - b["pos"][0], a["pos"][1] - b["pos"][1]))
+    return d >= _raio(a) + _raio(b) + folga
 
 
 def variar(cena: dict, rng: np.random.Generator, forca: float = 1.0, tamanho: float = 0.0,
@@ -53,7 +64,11 @@ def variar(cena: dict, rng: np.random.Generator, forca: float = 1.0, tamanho: fl
         if o.get("tipo") == "recipiente":
             o["pos"] = [o["pos"][0] + rng.uniform(-0.02, 0.02) * forca, o["pos"][1] + rng.uniform(-0.02, 0.02) * forca]
             continue
-        o["pos"] = [o["pos"][0] + rng.uniform(-0.04, 0.04) * forca, o["pos"][1] + rng.uniform(-0.04, 0.04) * forca]
+        base = list(o["pos"])
+        for _ in range(20):  # sorteia de novo se encostar em outro objeto (a garra não entra entre eles)
+            o["pos"] = [base[0] + rng.uniform(-0.04, 0.04) * forca, base[1] + rng.uniform(-0.04, 0.04) * forca]
+            if all(_longe(o, outro) for outro in c["objetos"] if outro is not o):
+                break
         o["yaw"] = float(o.get("yaw", 0)) + rng.uniform(-0.6, 0.6) * forca
         o["massa"] = float(o.get("massa", 0.1)) * rng.uniform(0.7, 1.3)
     validar_cena(c)
@@ -79,8 +94,8 @@ def rodar_episodio(cena: dict, saida: Path, idx: int, rng: np.random.Generator,
 
     def gravar(fase):
         serie["t"].append(d.time - t0)
-        serie["qpos"].append(d.qpos[g.qadr].copy())
-        serie["ctrl"].append(d.ctrl[:8].copy())
+        serie["qpos"].append(d.qpos[list(g.qadr) + [g.qadr_garra]].copy())
+        serie["ctrl"].append(d.ctrl[g.atu + [g.atu_garra]].copy())
         serie["tcp"].append(d.site_xpos[g.tcp].copy())
         serie["obj"].append(g.pos_objeto())
         serie["fase"].append(FASES.index(fase.nome) if fase.nome in FASES else -1)

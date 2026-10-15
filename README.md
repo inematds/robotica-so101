@@ -5,8 +5,9 @@ Gêmeo de simulação do braço **SO-101** (kit Hiwonder SO-ARM101, LeRobot) e o
 com um Franka Panda simulado: foto da mesa → gêmeo MuJoCo → episódios → plano provado na física. Aqui
 o gêmeo passa a ser o braço que vai estar na mesa de verdade.
 
-**Estado (15/10/2026): começo da Fase 0.** O código em `real2sim/` foi copiado do projeto do Panda e ainda
-não roda com o SO-101; a Fase 0 faz essa adaptação.
+**Estado (15/10/2026): Fase 0 feita.** O gêmeo do SO-101 pega e solta objetos leves na simulação:
+cubo de 3 cm, bola de tênis e potinho de 4 cm, cada um 50/50 episódios na bandeja; os três juntos
+num plano passam na prova. Próxima: Fase 1 (mesa real medida com fita métrica, sem ligar motor).
 
 ## Por que um projeto separado
 
@@ -38,10 +39,22 @@ Plano completo em [docs/PLANO.md](docs/PLANO.md):
 6. Treino com LeRobot (dados reais + simulados)
 7. Publicar
 
-## Instalar
+## Instalar e rodar
 
 ```bash
-./instalar.sh          # venv com MuJoCo + modelo do SO-101 (MuJoCo Menagerie, Apache-2.0)
+./instalar.sh                                                   # venv com MuJoCo + modelo do SO-101
+python3 testes/rodar.py                                         # testes (~3 min) -> TUDO OK
+./r2s.py episodios exemplos/mesa-so101/cena.json /tmp/ep -n 50  # dados de treino -> 50/50
+./r2s.py filmar exemplos/mesa-so101/cena.json /tmp/so101.mp4 --cameras geral,cima,pulso
+.venv/bin/python ferramentas/matriz_prova.py                    # prova cruzada: medida, ±15%, pior caso
 ```
+
+## O que o gêmeo do SO-101 sabe (Fase 0)
+
+- Garra reto para baixo de 15 a 30 cm da base, até ~8 cm de altura; mais alto ou mais longe, inclina.
+- Pega encostando o objeto no dedo fixo (a garra do SO-101 tem um dedo parado e um que gira).
+- Leva o objeto contornando os outros da mesa e passa só ~1,5 cm acima da borda da bandeja.
+- Objetos que vão para a mesma bandeja ganham vagas pelo tamanho de cada um.
+- Ainda não: deitar lata alta em bandeja rasa (existe no Panda).
 
 Licença: MIT (código). O modelo do SO-101 vem do MuJoCo Menagerie (Apache-2.0).

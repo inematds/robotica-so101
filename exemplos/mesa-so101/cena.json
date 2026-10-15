@@ -1,0 +1,11 @@
+{
+  "fonte": "escrita à mão para o SO-101 (Fase 0): objetos leves a 15–30 cm da base",
+  "mesa": {"largura": 0.8, "profundidade": 0.5, "centro_x": 0.22, "cor": "bege"},
+  "objetos": [
+    {"nome": "cubo_vermelho", "tipo": "caixa", "tamanho": [0.03, 0.03, 0.03], "pos": [0.22, 0.1], "yaw": 0.3, "cor": "vermelho", "massa": 0.02},
+    {"nome": "bola_tenis", "tipo": "esfera", "tamanho": [0.067], "pos": [0.26, -0.02], "cor": "amarelo", "massa": 0.058},
+    {"nome": "potinho_azul", "tipo": "cilindro", "tamanho": [0.04, 0.05], "pos": [0.17, 0.17], "cor": "azul", "massa": 0.03},
+    {"nome": "bandeja", "tipo": "recipiente", "tamanho": [0.2, 0.14, 0.03], "pos": [0.16, -0.15], "cor": "cinza"}
+  ],
+  "tarefa": {"pegar": "cubo_vermelho", "destino": "bandeja", "descricao": "pegar o cubo vermelho e pôr na bandeja"}
+}

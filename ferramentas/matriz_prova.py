@@ -2,7 +2,7 @@
 """Prova cruzada: cada ordem de plano em cada cena medida, com e sem erro de tamanho.
 
 Responde "o plano passou porque é bom ou porque a cena estava generosa?". Saída:
-resultados/mesa-foto/cruzada/matriz.json. Uso: .venv/bin/python ferramentas/matriz_prova.py
+resultados/mesa-so101/cruzada/matriz.json. Uso: .venv/bin/python ferramentas/matriz_prova.py
 Outras cenas: matriz_prova.py nome=cena.json [nome=cena.json ...] --saida arquivo.json [--deitar]
 """
 import json
@@ -18,10 +18,10 @@ sys.path.insert(0, str(RAIZ))
 from real2sim.cena2mjcf import carregar_cena  # noqa: E402
 from real2sim.provar import distribuir_vagas, marcar_deitar, provar  # noqa: E402
 
-R = RAIZ / "resultados/mesa-foto"
-CENAS = {"codex": RAIZ / "exemplos/mesa-foto/cena.json", "claude": R / "claude/cena.json",
-         "robotics-er-2": R / "gemini-robotics-er-2-preview/cena.json", "argon": R / "gemini-4-argon/cena.json"}
-PLANOS = {"lata→bola": ["cilindro", "esfera"], "bola→lata": ["esfera", "cilindro"]}  # por tipo de objeto
+R = RAIZ / "resultados/mesa-so101"
+CENAS = {"mesa-so101": RAIZ / "exemplos/mesa-so101/cena.json"}  # na Fase 1 entram as cenas da foto real
+PLANOS = {"cubo→bola→pote": ["caixa", "esfera", "cilindro"],  # por tipo de objeto
+          "pote→bola→cubo": ["cilindro", "esfera", "caixa"]}
 SAIDA = R / "cruzada/matriz.json"
 MODOS = {"medida": (0.0, False), "tamanho ±15%": (0.15, False), "pior caso": (0.15, True)}
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         b = next(o for o in carregar_cena(CENAS[c])["objetos"] if o["tipo"] == "recipiente")["tamanho"]
         print(f"\ncena {c} (bandeja {'×'.join(f'{t * 100:.0f}' for t in b)} cm)")
         for p in PLANOS:
-            print(f"  {p:10s}", "  ".join(f"{m}: {x['completos']:2d}/20" for m in MODOS
+            print(f"  {p:16s}", "  ".join(f"{m}: {x['completos']:2d}/20" for m in MODOS
                                           for x in linhas if x["cena"] == c and x["plano"] == p and x["modo"] == m))
     saida = SAIDA
     saida.parent.mkdir(parents=True, exist_ok=True)

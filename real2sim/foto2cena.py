@@ -19,6 +19,7 @@ import tempfile
 from pathlib import Path
 
 from .cena2mjcf import validar_cena
+from .robos import SO101
 
 PROMPT = """Você está montando o GÊMEO DE SIMULAÇÃO (MuJoCo) da mesa desta foto para um braço robótico.
 
@@ -26,7 +27,7 @@ Referência de escala: {referencia}. Use-a para estimar os tamanhos reais.
 Referencial: origem no MEIO da borda da mesa mais próxima da câmera; x em cm para frente (para
 longe da câmera), y em cm para a ESQUERDA de quem tira a foto. Posição = centro da base do objeto.
 
-Para cada objeto que um braço com garra de 8 cm de abertura poderia mover, e para recipientes
+Para cada objeto que um braço pequeno (garra de 9 cm de abertura, carga de 200 g) poderia mover, e para recipientes
 (bandeja, caixa aberta, cesto), devolva:
 - nome: snake_case curto em português (ex.: cubo_vermelho)
 - tipo: "caixa" | "cilindro" | "esfera" | "recipiente"
@@ -45,7 +46,7 @@ Responda SOMENTE com JSON válido, sem comentários, neste formato:
  "tarefa": {{"pegar": "<nome>", "destino": "<nome de um recipiente>", "descricao": "<frase curta>"}},
  "confianca": "<o que ficou incerto>"}}"""
 
-ALCANCE_MIN, ALCANCE_MAX = 0.30, 0.75
+ALCANCE_MIN, ALCANCE_MAX = 0.15, 0.30  # SO-101 com a garra para baixo (o validador aceita 0,12–0,38)
 
 
 ESFORCO: str | None = None  # esforço de raciocínio (low/medium/high/xhigh); None = padrão do CLI
@@ -172,7 +173,7 @@ def para_referencial_do_robo(bruta: dict) -> tuple[dict, list[str]]:
         objs.append({"nome": o["nome"], "tipo": o["tipo"], "tamanho": [t / 100 for t in o["tamanho"]],
                      "pos": [x, y], "yaw": round(o.get("yaw_graus", 0) * 3.14159 / 180, 3),
                      "cor": o.get("cor", "cinza"), "massa": round(o.get("massa_g", 100) / 1000, 3)})
-    # recua o braço / encolhe a cena até tudo caber no anel de alcance do Panda
+    # recua o braço / encolhe a cena até tudo caber no anel de alcance do SO-101
     xs = [o["pos"][0] for o in objs]
     dx = max(0.0, ALCANCE_MIN + 0.03 - min(xs)) if xs else 0.0
     if dx:
@@ -189,8 +190,10 @@ def para_referencial_do_robo(bruta: dict) -> tuple[dict, list[str]]:
                 o["pos"][0] += ALCANCE_MIN
     for o in objs:
         o["pos"] = [round(o["pos"][0], 3), round(o["pos"][1], 3)]
-        if o["tipo"] != "recipiente" and min(o["tamanho"][:2] if o["tipo"] == "caixa" else o["tamanho"][:1]) > 0.075:
-            avisos.append(f"{o['nome']}: mais largo que a garra (8 cm); só pode ser empurrado")
+        if o["tipo"] != "recipiente" and min(o["tamanho"][:2] if o["tipo"] == "caixa" else o["tamanho"][:1]) > SO101.abertura_max:
+            avisos.append(f"{o['nome']}: mais largo que a garra (9 cm); só pode ser empurrado")
+        if o["tipo"] != "recipiente" and o["massa"] > SO101.carga_max:
+            avisos.append(f"{o['nome']}: {o['massa'] * 1000:.0f} g passa da carga do braço (200 g)")
     # a tarefa é só sugestão: "pegar": "lata_azul, bola_tenis" (dois objetos) não derruba a cena
     tarefa = dict(bruta.get("tarefa") or {})
     nomes = {o["nome"] for o in objs}
@@ -200,9 +203,9 @@ def para_referencial_do_robo(bruta: dict) -> tuple[dict, list[str]]:
             tarefa.pop(chave)
     bruta = {**bruta, "tarefa": tarefa}
     mesa = bruta.get("mesa", {})
-    cena = {"fonte": "foto", "mesa": {"largura": max(mesa.get("largura_cm", 120) / 100, 0.9),
-                                      "profundidade": max(mesa.get("profundidade_cm", 80) / 100, 0.7),
-                                      "centro_x": 0.5, "cor": mesa.get("cor", "bege")},
+    cena = {"fonte": "foto", "mesa": {"largura": max(mesa.get("largura_cm", 80) / 100, 0.6),
+                                      "profundidade": max(mesa.get("profundidade_cm", 50) / 100, 0.45),
+                                      "centro_x": 0.22, "cor": mesa.get("cor", "bege")},
             "objetos": objs, "tarefa": bruta.get("tarefa", {}), "confianca": bruta.get("confianca", "")}
     return cena, avisos
 

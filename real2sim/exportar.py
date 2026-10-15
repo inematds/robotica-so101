@@ -20,8 +20,9 @@ import numpy as np
 
 PASSO_FOTO = 5          # episodios.py grava uma foto a cada 5 passos de controle
 FPS_ESTADO = 50
-JUNTAS = [f"junta{i}" for i in range(1, 8)]
-ACOES = JUNTAS + ["garra"]
+# mesmos nomes do so101_follower do LeRobot; aqui em radianos (o LeRobot real usa a escala calibrada)
+JUNTAS = [f"{n}.pos" for n in ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper")]
+ACOES = JUNTAS
 
 
 def _episodios(pasta: Path) -> list[Path]:
@@ -54,7 +55,7 @@ def exportar(pasta: str | Path, saida: str | Path, repo_id: str = "local/real2si
                                                "names": ["height", "width", "channels"]}
 
     ds = LeRobotDataset.create(repo_id=repo_id, fps=fps, features=features, root=saida,
-                               robot_type="franka_panda", use_videos=True)
+                               robot_type="so101_follower", use_videos=True)
     feitos, pulados, quadros = 0, 0, 0
     for npz in eps:
         anot = json.loads(npz.with_suffix(".json").read_text(encoding="utf-8"))
