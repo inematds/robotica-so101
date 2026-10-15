@@ -3,70 +3,73 @@
 Cada linha é um assunto em andamento: leia o snapshot do assunto que for continuar. Gravado por handoff-grava.py.
 
 <!-- handoff-indice:inicio -->
-- `fase0-gemeo-so101` · handoffs/history/2026-10-15T200741Z-fase0-gemeo-so101.md · 15/10 17:07
+- `fase0-gemeo-so101` · handoffs/history/2026-10-15T204817Z-fase0-gemeo-so101.md · 15/10 17:48
 <!-- handoff-indice:fim -->
 
 ---
 
-Cópia integral do snapshot mais recente (handoffs/history/2026-10-15T200741Z-fase0-gemeo-so101.md):
+Cópia integral do snapshot mais recente (handoffs/history/2026-10-15T204817Z-fase0-gemeo-so101.md):
 
-# Handoff — 2026-10-15 — Início do robotica-so101 (gêmeo do SO-101, Fase 0)
+# Handoff — 2026-10-15 — Fase 0: código adaptado ao SO-101, gerador funcionando (testes em execução)
 
 ## Projeto e escopo
-robotica-so101, raiz ~/projetos/robotica-so101, repositório inematds/robotica-so101 (público, criado em 15/10/2026). Um projeto por robô: o usuário vai comprar o kit Hiwonder SO-ARM101 (Amazon B0HGDCBWWV) e pediu um projeto separado do ~/projetos/robotica-real2sim (Franka Panda), para um não afetar o outro. Não mexer no robotica-real2sim por causa deste.
+robotica-so101, raiz ~/projetos/robotica-so101. O usuário pediu "faça todos os passos" da Fase 0 (handoff anterior): adaptar real2sim/ do Panda para o SO-101. Tudo local, sem API.
 
 ## Objetivo atual
-Fase 0 de docs/PLANO.md: gêmeo do SO-101 pegando e soltando objetos no simulador. Critério: `python3 testes/rodar.py` → TUDO OK com o SO-101, e `./r2s.py episodios exemplos/mesa-so101/cena.json /tmp/ep -n 50` → 45/50 ou mais.
+Fase 0 de docs/PLANO.md. Critério: `python3 testes/rodar.py` → TUDO OK; `./r2s.py episodios exemplos/mesa-so101/cena.json /tmp/ep -n 50` → 45/50 ou mais.
 
 ## Estado aceito
-- [confirmed] Código copiado do robotica-real2sim (commit 32a262c de lá) para real2sim/, r2s.py, testes/, ferramentas/matriz_prova.py; AINDA PRESO AO PANDA (não roda: o modelo do Panda foi removido de vendor/)
-- [confirmed] Modelo `vendor/menagerie/robotstudio_so101/` (sparse-checkout; vendor fora do git); instalar.sh já aponta para ele
-- [confirmed] .venv criada com MuJoCo 3.16.0 (requirements.txt)
-- [confirmed] CLAUDE.md, README.md, docs/PLANO.md (cópia do PLANO-SO101.md do real2sim) — commit 033d4b8, push feito
-- [confirmed] Medido no modelo: juntas shoulder_pan, shoulder_lift, elbow_flex, wrist_flex, wrist_roll, gripper; atuadores de posição kp 998, forcerange ±2,94; site da ponta `gripperframe` (quat 1 0 1 0 no corpo gripper), `baseframe` na origem; câmera `wrist_cam` no corpo camera_mount; alcance ~468 mm; garra: vão entre pontas 1,5 cm (0 rad), 5,3 (0,5), 8,6–9,0 (1,0), 12,7–13,2 cm (1,75); ctrl da garra −0,17 a 1,75 rad; geoms de contato da garra: fixed_jaw_* (corpo gripper) e moving_jaw_* (corpo moving_jaw_so101_v1); massa total 0,645 kg
-- [confirmed] Kit real (página da Amazon): servos Hiwonder HX-30HM/HX-10HM, carga 200 g, alcance 400 mm, PLA, câmera no pulso + externa, BusLinker V3.0
+- [confirmed] `real2sim/robos.py` novo: config do SO-101 (juntas, gripperframe, garra 1,5/−0,17 rad, casa, alcance 0,12–0,38, abertura 9 cm, carga 200 g, dedo_fixo −0,012, folga 0,004, altura_seg 0,05, vel 0,25)
+- [confirmed] `real2sim/cena2mjcf.py`: carrega so101.xml, mesa menor, câmeras geral/cima/frente (helper `olhar`), wrist_cam → "pulso", validar_cena com alcance do robô
+- [confirmed] `real2sim/gerador.py` reescrito: IK sobre postura comandada (cópia cinemática `dk`, sem integrar erro medido), pesos inclinação 0,05 / giro 0,5, junta no limite sai do cálculo, pegada encostada no dedo fixo, esfera 0,4 raio abaixo do centro, direção da pegada na média dos ângulos pega/destino, desvio ponta-objeto congelado após subir, sobe acima da borda antes de andar, pontos de desvio em volta de obstáculos, `dentro_do_destino` exige apoiado no fundo; `deitar` devolve falha explícita
+- [confirmed] `episodios.py` (estado/ação 6 valores, sorteio sem objetos encostados), `provar.py` (prompt com 9 cm/200 g, vagas por largura de cada objeto), `foto2cena.py` (alcance 0,15–0,30, aviso de carga, mesa menor), `exportar.py` (nomes so101_follower `*.pos`, robot_type so101_follower), `ferramentas/matriz_prova.py` (cena mesa-so101, planos de 3 objetos)
+- [confirmed] `exemplos/mesa-so101/cena.json`: cubo 3 cm, bola de tênis 6,7 cm, potinho 4×5 cm, bandeja 20×14×3 em (0,16, −0,15)
+- [confirmed] 50 episódios: cubo 50/50, bola 50/50, potinho 50/50 (antes da mudança de `dentro_do_destino`)
+- [confirmed] Vídeo `resultados/mesa-so101/tres-objetos.mp4`: plano de 3 objetos com sucesso
+- [confirmed] `testes/rodar.py` reescrito para o SO-101 (14 casos); CLAUDE.md e README.md atualizados com estado e lições
 
 ## Proposto / tentado, não confirmado
-- [?] Se os servos HX falam o protocolo Feetech do LeRobot (`so101_follower`); o tutorial da Hiwonder usa `pip install -e ".[feetech]"`, mas não está escrito. Perguntar à Hiwonder antes da Fase 2.
-- [unverified] Se o SO-101 consegue apontar a garra reto para baixo em toda a área de 12–35 cm; talvez precise de garra inclinada perto e longe da base.
+- [?] `testes/rodar.py` ainda rodando no fim deste snapshot — conferir resultado
+- [?] Matriz de prova (medida, ±15%, pior caso) rodando — conferir ≥18/20 por modo
+- [unverified] 50 episódios depois da mudança de `dentro_do_destino` (apoiado no fundo) — rodar de novo
 
 ## Decisões e restrições
-- Um projeto por robô; o Panda fica no robotica-real2sim.
-- Pacote mantém o nome `real2sim/` e o CLI `r2s.py` por enquanto (menos mudança).
-- Objetos até 150 g (bola de tênis ~58 g, cubo de 3–4 cm, lata vazia, copo de papel); alcance válido ~0,12–0,35 m.
-- Líder em 5 V, seguidor em 12 V: trocar queima os servos.
-- Nada vai ao braço real sem passar no `provar --pior-caso`.
+- Integrar erro medido (lição do Panda) não vale no SO-101: servo rígido, oscilava.
+- Passar por cima da bola é inalcançável com garra para baixo: contornar.
+- Lata deitada não portada para o SO-101 (adiado).
+- docs/PLANO.md ainda não atualizado com o fim da Fase 0.
 
 ## Arquivos alterados
-- Tudo novo neste repositório (commit 033d4b8).
-- Fora do projeto: `~/projetos/robotica-real2sim` — guia/README apontam para este repositório (commit bc84eb5); `~/projetos/wifi/pendencias.md` — item da foto real + braço.
+- `real2sim/robos.py` (novo), `real2sim/cena2mjcf.py`, `real2sim/gerador.py`, `real2sim/episodios.py`, `real2sim/provar.py`, `real2sim/foto2cena.py`, `real2sim/exportar.py`, `ferramentas/matriz_prova.py`, `testes/rodar.py`, `exemplos/mesa-so101/cena.json` (novo), `resultados/mesa-so101/` (novo), `CLAUDE.md`, `README.md` — nada disso commitado ainda
+- Fora do projeto: nenhum
 
 ## Memória e regras duráveis tocadas
-- CLAUDE.md deste projeto (novo), com as lições herdadas do real2sim
+- `~/projetos/robotica-so101/CLAUDE.md` — estado da Fase 0 e 5 lições novas do SO-101 (IK, garra assimétrica, transporte, variações)
 
 ## Verificação
-- Rodado: `.venv/bin/python -c "import mujoco"` → 3.16.0
-- Rodado (no real2sim, sobre o modelo do SO-101): alcance e abertura da garra, valores acima
-- Não rodado: `testes/rodar.py` neste projeto — sabido que falha (código ainda é do Panda)
+- Rodado: `./r2s.py episodios exemplos/mesa-so101/cena.json <scratch>/ep -n 50` → 50/50 (cubo); idem bola e potinho 50/50
+- Rodado: plano 3 objetos com vagas, provar n=20 → 18/20; cubo+potinho sem vagas 0/6, com vagas 6/6
+- Rodado: `./r2s.py filmar ... --plano resultados/mesa-so101/plano.json` → sucesso nos 3
+- Não rodado ainda: `testes/rodar.py` completo (em execução), matriz_prova (em execução)
 
 ## Estado em execução
-- Processos em segundo plano: nenhum
+- Processos em segundo plano: `testes/rodar.py` (task bsoisqc9k) e `ferramentas/matriz_prova.py` (task bn038r4aw); terminam sozinhos
 - Servidores / portas: nenhum
 - Worktrees / branches abertos: nenhum
 
 ## Perguntas abertas e adiados
-- Aberta: driver dos servos HX (ver acima)
-- Adiado: Fases 1–7; venv do LeRobot (`./instalar.sh --lerobot`), quando for exportar
+- Aberta: driver dos servos HX (Feetech?) — antes da Fase 2
+- Adiado: lata deitada no SO-101; Fases 1–7
 
 ## Próxima ação exata
-Fase 0, nesta ordem: (1) `real2sim/robos.py` com a configuração do SO-101 (modelo, juntas, `gripperframe`, geoms da garra, garra aberta ~1,2 rad / fechada −0,17, postura de casa, alcance, abertura, carga); (2) `cena2mjcf.py` carrega `so101.xml`, mesa menor com tampo em z=0, câmeras geral/cima/frente em escala pequena, renomear `wrist_cam` para `pulso`; `validar_cena` com alcance 0,12–0,38; (3) `gerador.py`: IK de 5 juntas = posição (3) + eixo de aproximação para baixo (2, erro = produto vetorial), `wrist_roll` no espaço nulo seguindo o giro do objeto; alturas e velocidades menores (~0,08 m, ~0,25 m/s); (4) `exemplos/mesa-so101/cena.json` com cubo 3 cm, bola de tênis, bandeja ~15×12×3 cm a 15–30 cm da base; (5) trocar 8 cm/0,078 por 0,09 (garra) e 0,25–0,80 por 0,12–0,38 em foto2cena.py, provar.py (prompt do plano) e episodios.py; (6) testes adaptados. Sem aprovação extra: tudo local.
+Ler o resultado dos testes e da matriz; corrigir falhas; rerodar 50 episódios; atualizar docs/PLANO.md (Fase 0 feita); commit (autor inematds) + push.
 
 ## Mapa de retomada
-- `docs/PLANO.md` — o roteiro (Fases 0–7) e os riscos
-- `CLAUDE.md` — regras e lições
-- `real2sim/gerador.py` — o maior trabalho da Fase 0 (IK)
-- `real2sim/cena2mjcf.py` — montagem da cena
-- `vendor/menagerie/robotstudio_so101/so101.xml` — o modelo
+- `docs/PLANO.md` — roteiro e critério da Fase 0
+- `real2sim/gerador.py` — o núcleo adaptado
+- `real2sim/robos.py` — parâmetros do SO-101
+- `testes/rodar.py` — critério
+- `CLAUDE.md` — lições novas
 
 ## Checagem de compartilhamento
 - Sem segredos, tokens, cookies, dados pessoais ou endpoints privados: sim
