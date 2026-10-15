@@ -1,5 +1,17 @@
 # robotica-so101
 
+[![Gêmeo do SO-101](guia/assets/banner.jpg)](https://inematds.github.io/robotica-so101/guia/)
+
+**🇧🇷 [Português](README.md) · 🇺🇸 [English](README.en.md) · 🇪🇸 [Español](README.es.md)**
+
+## O que é
+
+É uma cópia virtual (um "gêmeo") do braço robótico SO-101, o kit barato de 5 juntas usado com o LeRobot, rodando no simulador de física MuJoCo. Serve para quem vai montar o braço e quer testar antes: o gêmeo pega um cubo, uma bola de tênis e um potinho e põe numa bandeja, grava os movimentos como dados de treino e mostra se um plano funciona. Precisa só de um computador com Linux e Python; o braço de verdade entra nas fases seguintes.
+
+## 📖 Guia de uso
+
+Guia completo (landing + passo a passo): **https://inematds.github.io/robotica-so101/guia/**
+
 Gêmeo de simulação do braço **SO-101** (kit Hiwonder SO-ARM101, LeRobot) e o caminho até o braço real.
 É a continuação do [robotica-real2sim](https://github.com/inematds/robotica-real2sim), que faz o mesmo
 com um Franka Panda simulado: foto da mesa → gêmeo MuJoCo → episódios → plano provado na física. Aqui

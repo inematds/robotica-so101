@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>robotica-so101 — gemelo de simulación del brazo SO-101</title>
+<meta name="description" content="Gemelo de simulación (MuJoCo) del brazo Hiwonder SO-ARM101 / LeRobot: toma y suelta un cubo, una pelota de tenis y un frasquito en la física, genera episodios de entrenamiento y prueba el plan antes del brazo real.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/robotica-so101/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/robotica-so101/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/robotica-so101/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#FACC15; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#a16207; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(250,204,21,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(250,204,21,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(250,204,21,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img{width:100%;display:block}
+  .ex figcaption{padding:12px 14px;font-size:.88rem;color:var(--mut);background:var(--card)}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+  .tbl th,.tbl td{border-bottom:1px solid var(--line);padding:.6em .7em;text-align:left;vertical-align:top}
+  .tbl th{font-family:Sora;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+  .tblw{overflow-x:auto}
+  .nota{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--amb);border-radius:12px;padding:14px 18px;margin:18px 0;color:var(--txt)}
+  video{width:100%;display:block;border-radius:14px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🦾</span> robotica-so101</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">Qué es</a>
+    <a class="sec" href="#fluxo">Cómo funciona</a>
+    <a class="sec" href="#guia">Guía de uso</a>
+    <a class="sec" href="#resultados">Resultados</a>
+    <a class="sec" href="#roadmap">Hoja de ruta</a>
+    <span class="lang"><a href="../">PT</a><a href="../en/">EN</a><a class="on" href="./">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/robotica-so101" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Hiwonder SO-ARM101 · LeRobot · MuJoCo</span>
+      <h1>El brazo que irá a la mesa ya <span class="amb">entrena</span> en el simulador</h1>
+      <p class="lead">Gemelo de simulación del SO-101: toma, lleva y suelta objetos livianos en la física, genera datos de entrenamiento y prueba el plan antes de encender un motor.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Empezar la guía</a>
+        <a class="btn ghost" href="https://github.com/inematds/robotica-so101" target="_blank" rel="noopener">Ver en GitHub</a>
+      </div>
+    </div>
+    <figure><img src="../assets/banner-es.jpg" alt="Banner: gemelo del SO-101, el brazo toma y suelta en la simulación"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">En resumen</span>
+  <p>Es una copia virtual (un "gemelo") del brazo robótico SO-101, el kit económico de 5 articulaciones que se usa con LeRobot, funcionando en el simulador de física MuJoCo. Sirve para quien va a armar el brazo y quiere probar antes: el gemelo toma un cubo, una pelota de tenis y un frasquito y los pone en una bandeja, graba los movimientos como datos de entrenamiento y muestra si un plan funciona. Solo necesita una computadora con Linux y Python; el brazo real entra en las fases siguientes.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">Qué es</span>
+  <h2>Un proyecto por robot: este es el del SO-101</h2>
+  <p class="sub">Continúa el <a href="https://inematds.github.io/robotica-real2sim/guia/es/" target="_blank" rel="noopener">robotica-real2sim</a>, que hizo lo mismo con un brazo industrial Franka Panda. El SO-101 alcanza la mitad y carga 15 veces menos, así que casi todo cambió: cinemática, pinza, mesa y objetos.</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-es.jpg" alt="Banner: del simulador al brazo real, las etapas del proyecto" loading="lazy" style="width:100%;display:block"></figure>
+  <div class="grid g3">
+    <div class="card"><h3>🦾 El brazo correcto</h3><p>Modelo oficial del SO-101 (MuJoCo Menagerie): 5 articulaciones en el brazo, pinza con un dedo fijo y uno que gira, servos con fuerza máxima de 2,94 N·m.</p></div>
+    <div class="card"><h3>🦾 Toma y suelta de verdad</h3><p>Un cubo de 3 cm, una pelota de tenis y un frasquito de 4 cm van a la bandeja en la física: 50 de 50 episodios para cada uno.</p></div>
+    <div class="card"><h3>🦾 Prueba antes del motor</h3><p>Cada plan se ejecuta decenas de veces con variaciones de posición y de tamaño. Nada va al brazo real sin pasar la prueba del peor caso.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Cómo funciona</span>
+  <h2>De la mesa descrita al dato de entrenamiento</h2>
+  <p class="sub">La mesa se convierte en un archivo <code>cena.json</code> (escrito a mano o sacado de una foto por un modelo de visión). De ahí en adelante todo corre en local, sin API.</p>
+  <div class="flow">
+    <span>cena.json</span><span class="arr">→</span>
+    <span>escena MuJoCo con el SO-101</span><span class="arr">→</span>
+    <span>generador de movimiento</span><span class="arr">→</span>
+    <span>prueba con variaciones</span><span class="arr">→</span>
+    <span>episodios + anotación</span><span class="arr">→</span>
+    <span>dataset LeRobot</span>
+  </div>
+  <div class="grid g3" style="margin-top:24px">
+    <div class="card"><div class="num">1</div><h3>Cinemática de 5 articulaciones</h3><p>Manda la posición de la punta; la pinza queda recta hacia abajo cuando se puede y se inclina sola cuando el brazo no alcanza. El giro de la muñeca elige de qué lado cierra la pinza.</p></div>
+    <div class="card"><div class="num">2</div><h3>Pinza asimétrica</h3><p>El objeto se toma apoyado en el dedo fijo; la pelota se toma un poco por debajo del centro, si no el dedo móvil la empuja hacia abajo y se resbala.</p></div>
+    <div class="card"><div class="num">3</div><h3>Trayectoria con desvío</h3><p>El objeto cargado pasa solo 1,5 cm por encima del borde de la bandeja y rodea lo que hay en la mesa: pasar por encima de una pelota de tenis ya queda fuera de alcance.</p></div>
+  </div>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Requisitos previos</span>
+  <h2>Qué se necesita para ejecutarlo</h2>
+  <p class="sub">Probado en Linux con Python 3.12. No necesita tarjeta de video dedicada: las imágenes salen por EGL.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Python 3.10+ y git</h3><p>El instalador crea el entorno virtual y descarga el modelo del SO-101.</p><pre><span class="k">git clone</span> https://github.com/inematds/robotica-so101
+<span class="k">cd</span> robotica-so101 && <span class="k">./instalar.sh</span></pre></div>
+    <div class="card"><h3>ffmpeg (para video)</h3><p>Solo para el comando <code>filmar</code>.</p><pre><span class="k">sudo apt install</span> ffmpeg</pre></div>
+    <div class="card"><h3>LeRobot (opcional)</h3><p>Solo para exportar los episodios como dataset de LeRobot.</p><pre><span class="k">./instalar.sh</span> --lerobot</pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Guía de uso · paso a paso</span>
+  <h2>De cero a los datos de entrenamiento</h2>
+  <p class="sub">Todos los comandos de abajo se ejecutan en la carpeta del proyecto. Usa siempre <code>MUJOCO_GL=egl</code> si no hay pantalla (el <code>r2s.py</code> ya lo hace).</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Instalar y probar</h3>
+    <p>Las pruebas verifican la escena, el alcance de la pinza, los planes y los episodios.</p>
+<pre><span class="k">./instalar.sh</span>
+<span class="k">python3</span> testes/rodar.py   <span class="c"># 14 casos -> TUDO OK</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Ver la mesa</h3>
+    <p>La escena de ejemplo tiene un cubo, una pelota de tenis, un frasquito y una bandeja, a entre 15 y 30 cm de la base. Cámaras: <code>geral</code>, <code>cima</code>, <code>frente</code> y <code>pulso</code>.</p>
+<pre><span class="k">./r2s.py ver</span> exemplos/mesa-so101/cena.json mesa.png --camera geral</pre>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Filmar el brazo trabajando</h3>
+    <p>Un video con la tarea de la escena (tomar el cubo y ponerlo en la bandeja), con tres cámaras lado a lado.</p>
+<pre><span class="k">./r2s.py filmar</span> exemplos/mesa-so101/cena.json so101.mp4 --cameras geral,cima,pulso</pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Probar un plan con varios objetos</h3>
+    <p>El plan es una lista de pasos <code>pegar → destino</code>. La prueba se ejecuta N veces, cada vez con la mesa un poco distinta, y dice qué paso falla y por qué. Los lugares en la bandeja se calculan según el tamaño de cada objeto.</p>
+<pre><span class="k">./r2s.py provar</span> exemplos/mesa-so101/cena.json resultados/mesa-so101/plano.json -n 20
+<span class="k">./r2s.py provar</span> exemplos/mesa-so101/cena.json resultados/mesa-so101/plano.json -n 20 --pior-caso</pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Generar episodios de entrenamiento</h3>
+    <p>Cada episodio sortea posición, giro y masa de los objetos, graba articulaciones y comandos a 50 Hz y una anotación en 4 niveles (objetivo, subtarea, primitiva, eventos). Con <code>--imagens</code>, graba también las cámaras <code>cima</code> y <code>pulso</code>.</p>
+<pre><span class="k">./r2s.py episodios</span> exemplos/mesa-so101/cena.json /tmp/ep -n 50   <span class="c"># 50/50 en ~9 s</span>
+<span class="k">./r2s.py exportar</span> /tmp/ep /tmp/ds   <span class="c"># dataset LeRobot (requiere --lerobot)</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Armar la escena a partir de una foto (opcional)</h3>
+    <p>Un modelo de visión por suscripción (Codex o Claude) lee la foto de la mesa y devuelve los objetos en centímetros; el script lleva todo al alcance del SO-101 y avisa lo que excede la pinza (9 cm) o la carga (200 g).</p>
+<pre><span class="k">./r2s.py foto</span> foto.jpg cena.json --motor codex</pre>
+  </div></div>
+</div></section>
+
+<section id="resultados"><div class="wrap">
+  <span class="chip">Resultados</span>
+  <h2>Lo que el gemelo ya hace (15/10/2026)</h2>
+  <p class="sub">Números medidos en la escena <code>exemplos/mesa-so101</code>, semilla 0. El video tiene subtítulos en portugués.</p>
+  <video src="../assets/clip-tres-objetos.mp4" controls muted playsinline preload="metadata" poster="../assets/fim-tres-objetos.jpg"></video>
+  <div class="ex" style="margin-top:18px">
+    <figure><img src="../assets/pegando-cubo.jpg" alt="El SO-101 cierra la pinza sobre el cubo rojo; a la derecha, las cámaras de arriba y de la muñeca" loading="lazy"><figcaption>Tomando el cubo: la muñeca gira para que la pinza cierre sobre una cara del cubo.</figcaption></figure>
+    <figure><img src="../assets/fim-tres-objetos.jpg" alt="Cubo, pelota de tenis y frasquito lado a lado dentro de la bandeja" loading="lazy"><figcaption>Fin del plan: los tres objetos en lugares distintos, cada uno del tamaño del objeto.</figcaption></figure>
+  </div>
+  <div class="tblw" style="margin-top:22px"><table class="tbl">
+    <tr><th>Prueba</th><th>Resultado</th></tr>
+    <tr><td>Cubo de 3 cm hasta la bandeja</td><td>50/50 episodios</td></tr>
+    <tr><td>Pelota de tenis (6,7 cm, 58 g)</td><td>50/50 episodios</td></tr>
+    <tr><td>Frasquito de 4 cm</td><td>50/50 episodios</td></tr>
+    <tr><td>Los tres en la misma bandeja, medida correcta</td><td>18/20</td></tr>
+    <tr><td>Los tres, tamaño erróneo en ±15%</td><td>18/20</td></tr>
+    <tr><td>Los tres, peor caso (bandeja 15% más chica)</td><td>6/20: los tres casi no caben</td></tr>
+    <tr><td>Cubo + frasquito sin lugares × con lugares</td><td>0/6 × 6/6</td></tr>
+  </table></div>
+  <div class="nota"><strong>Alcance medido en el modelo:</strong> con la pinza recta hacia abajo, el SO-101 llega de 15 a 30 cm de la base, hasta unos 8 cm de altura. Más cerca, más lejos o más alto, la pinza tiene que inclinarse. El fabricante indica 40 cm de alcance; el modelo da 46,8 cm con el brazo extendido.</div>
+  <figure style="margin:18px 0 0;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><img src="../assets/quatro-cameras.jpg" alt="Las cuatro cámaras de la escena: general, arriba, frente y muñeca" loading="lazy" style="width:100%;display:block"></figure>
+</div></section>
+
+<section id="limites"><div class="wrap">
+  <span class="chip">Límites</span>
+  <h2>Lo que todavía no existe</h2>
+  <p class="sub">Para no prometer lo que el proyecto no hace.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Solo simulación</h3><p>El brazo real todavía no se encendió. El driver de los servos Hiwonder HX en LeRobot aún no está confirmado.</p></div>
+    <div class="card"><h3>Lata acostada</h3><p>Acostar una lata alta en una bandeja baja existe en el proyecto del Panda, pero no se portó al SO-101.</p></div>
+    <div class="card"><h3>Posición perfecta</h3><p>En el simulador, el generador sabe dónde está cada objeto. En el mundo real, esa posición vendrá de la cámara (Fase 4).</p></div>
+  </div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Hoja de ruta</span>
+  <h2>Del gemelo al brazo real</h2>
+  <p class="sub">Cada fase tiene un criterio del tipo "comando → salida esperada" en <a href="https://github.com/inematds/robotica-so101/blob/main/docs/PLANO.md" target="_blank" rel="noopener">docs/PLANO.md</a> (en portugués).</p>
+  <div class="phase"><div class="tag">Fase 0 ✓</div><div class="d"><strong>Gemelo del SO-101 en el simulador</strong><span>Terminada el 15/10/2026: pruebas TUDO OK y 50/50 episodios.</span></div></div>
+  <div class="phase"><div class="tag">Fase 1</div><div class="d"><strong>Mesa real medida con cinta métrica</strong><span>Medir y fotografiar la mesa y comparar el error de cada modelo de visión, sin encender motores.</span></div></div>
+  <div class="phase"><div class="tag">Fase 2</div><div class="d"><strong>Armar, encender y calibrar</strong><span>Fuentes correctas (líder 5 V, seguidor 12 V), driver de los servos, teleoperación con el brazo líder.</span></div></div>
+  <div class="phase"><div class="tag">Fase 3</div><div class="d"><strong>Comparar gemelo y brazo</strong><span>Las mismas 10 posturas en ambos; error de la punta por debajo de 1 cm.</span></div></div>
+  <div class="phase"><div class="tag">Fase 4</div><div class="d"><strong>La cámara da la posición</strong><span>Marcadores ArUco en los objetos en lugar de la posición perfecta del simulador.</span></div></div>
+  <div class="phase"><div class="tag">Fase 5</div><div class="d"><strong>Primera prueba física</strong><span>20 intentos reales junto a la tasa de la simulación.</span></div></div>
+  <div class="phase"><div class="tag">Fase 6–7</div><div class="d"><strong>Entrenamiento con LeRobot y publicación</strong><span>Solo real, solo simulación y real + simulación: ¿el gemelo ayuda?</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">MuJoCo</div><div class="pill">Python</div><div class="pill">LeRobot</div><div class="pill">SO-101</div>
+    <p style="margin-top:18px">robotica-so101 · código MIT, modelo del SO-101 de MuJoCo Menagerie (Apache-2.0) ·
+      <a href="https://github.com/inematds/robotica-so101">inematds/robotica-so101</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='robotica-so101-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; }
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      localStorage.setItem(KEY, light?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>
