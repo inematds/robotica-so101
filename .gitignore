@@ -1,0 +1,10 @@
+.venv/
+vendor/
+__pycache__/
+*.pyc
+*.mp4
+!guia/assets/*.mp4
+*.codex.log
+.venv-lerobot/
+resultados/*/episodios-imagens/
+resultados/*/lerobot/
