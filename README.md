@@ -61,6 +61,20 @@ python3 testes/rodar.py                                         # testes (~3 min
 .venv/bin/python ferramentas/matriz_prova.py                    # prova cruzada: medida, ±15%, pior caso
 ```
 
+## Exercícios do estande: descobrir, arrumar, obedecer
+
+Três atividades para o estande, guiadas por uma câmera de cima (detalhes em
+[`exercicios/README.md`](exercicios/README.md)); medidas no gêmeo em 19/10/2026:
+
+| Exercício | O que faz | Medido |
+|---|---|---|
+| `./r2s.py descobrir` | acha a peça intrusa (cor ou forma diferente), anuncia, guarda e comemora | 20/20 |
+| `./r2s.py arrumar` | ordem de limpeza: tudo que está fora da caixa vai para a caixa, conferindo pela câmera | 20/20 mesas limpas |
+| `./r2s.py obedecer` | "pega o cubo vermelho", "cadê a bola azul?", "arruma a mesa", "dá tchau" | 11/11 frases |
+
+Visão: erro médio de 1,1 mm contra a física, cor e forma 70/70. Tudo local (sem API); voz opcional
+com Whisper local (`./instalar.sh --voz`) e Piper.
+
 ## O que o gêmeo do SO-101 sabe (Fase 0)
 
 - Garra reto para baixo de 15 a 30 cm da base, até ~8 cm de altura; mais alto ou mais longe, inclina.

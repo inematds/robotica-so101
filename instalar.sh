@@ -11,6 +11,14 @@ if [ "${1:-}" = "--lerobot" ]; then   # venv opcional: exportar episódios para 
   exit 0
 fi
 
+if [ "${1:-}" = "--voz" ]; then     # opcional: ouvir pelo microfone nos exercícios (Whisper local)
+  .venv/bin/pip install -q -r requirements-voz.txt
+  .venv/bin/python -c "import faster_whisper; print('faster-whisper ok')"
+  command -v arecord >/dev/null || echo "falta o arecord: sudo apt install alsa-utils"
+  command -v piper >/dev/null || echo "sem piper: o robô só escreve, não fala (opcional)"
+  exit 0
+fi
+
 python3 -m venv .venv
 .venv/bin/pip install -q --upgrade pip
 .venv/bin/pip install -q -r requirements.txt

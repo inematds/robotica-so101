@@ -1,0 +1,195 @@
+{
+ "exercicio": "obedecer",
+ "frases": 11,
+ "acertos": "11",
+ "taxa": 1.0,
+ "detalhe": [
+  {
+   "frase": "Pega o cubo vermelho e coloca na caixa",
+   "entendido": {
+    "acao": "pegar",
+    "cor": "vermelho",
+    "forma": "quadrado"
+   },
+   "esperado": [
+    "pegar",
+    "vermelho",
+    "quadrado",
+    true
+   ],
+   "fez": "guardou",
+   "ok": true,
+   "resposta": "Feito!"
+  },
+  {
+   "frase": "guarda a bola azul",
+   "entendido": {
+    "acao": "pegar",
+    "cor": "azul",
+    "forma": "redondo"
+   },
+   "esperado": [
+    "pegar",
+    "azul",
+    "redondo",
+    true
+   ],
+   "fez": "guardou",
+   "ok": true,
+   "resposta": "Feito!"
+  },
+  {
+   "frase": "Robô, põe a bolinha amarela na caixa!",
+   "entendido": {
+    "acao": "pegar",
+    "cor": "amarelo",
+    "forma": "redondo"
+   },
+   "esperado": [
+    "pegar",
+    "amarelo",
+    "redondo",
+    true
+   ],
+   "fez": "guardou",
+   "ok": true,
+   "resposta": "Feito!"
+  },
+  {
+   "frase": "aponta o cubo verde",
+   "entendido": {
+    "acao": "apontar",
+    "cor": "verde",
+    "forma": "quadrado"
+   },
+   "esperado": [
+    "apontar",
+    "verde",
+    "quadrado",
+    true
+   ],
+   "fez": "apontou",
+   "ok": true,
+   "resposta": "Achei o cubo verde. É este aqui."
+  },
+  {
+   "frase": "cadê a bola laranja?",
+   "entendido": {
+    "acao": "apontar",
+    "cor": "laranja",
+    "forma": "redondo"
+   },
+   "esperado": [
+    "apontar",
+    "laranja",
+    "redondo",
+    false
+   ],
+   "fez": "nada",
+   "ok": true,
+   "resposta": "Não vejo nenhuma bola laranja fora da caixa."
+  },
+  {
+   "frase": "o que você está vendo?",
+   "entendido": {
+    "acao": "descrever",
+    "cor": null,
+    "forma": null
+   },
+   "esperado": [
+    "descrever",
+    null,
+    null,
+    true
+   ],
+   "fez": "descreveu",
+   "ok": true,
+   "resposta": "Vejo uma bola amarela, um cubo vermelho, uma bola azul e um cubo verde na mesa."
+  },
+  {
+   "frase": "dá tchau pro pessoal",
+   "entendido": {
+    "acao": "acenar",
+    "cor": null,
+    "forma": null
+   },
+   "esperado": [
+    "acenar",
+    null,
+    null,
+    true
+   ],
+   "fez": "acenou",
+   "ok": true,
+   "resposta": "Tchau, pessoal! Volte sempre."
+  },
+  {
+   "frase": "arruma a mesa",
+   "entendido": {
+    "acao": "arrumar",
+    "cor": null,
+    "forma": null
+   },
+   "esperado": [
+    "arrumar",
+    null,
+    null,
+    true
+   ],
+   "fez": "arrumou",
+   "ok": "True",
+   "resposta": "Mesa limpa! Tudo na caixa."
+  },
+  {
+   "frase": "qual é o intruso?",
+   "entendido": {
+    "acao": "descobrir",
+    "cor": null,
+    "forma": null
+   },
+   "esperado": [
+    "descobrir",
+    null,
+    null,
+    true
+   ],
+   "fez": "descobriu",
+   "ok": true,
+   "resposta": "Pronto! Intruso guardado."
+  },
+  {
+   "frase": "volta pra casa",
+   "entendido": {
+    "acao": "casa",
+    "cor": null,
+    "forma": null
+   },
+   "esperado": [
+    "casa",
+    null,
+    null,
+    true
+   ],
+   "fez": "casa",
+   "ok": true,
+   "resposta": "Voltei para a posição de descanso."
+  },
+  {
+   "frase": "faz um bolo de chocolate",
+   "entendido": {
+    "acao": null,
+    "cor": null,
+    "forma": null
+   },
+   "esperado": [
+    null,
+    null,
+    null,
+    false
+   ],
+   "fez": "nada",
+   "ok": true,
+   "resposta": "Não entendi. Tente: pega o cubo vermelho, aponta a bola azul, arruma a mesa ou dá tchau."
+  }
+ ]
+}

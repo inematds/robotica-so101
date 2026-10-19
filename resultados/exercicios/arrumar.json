@@ -1,0 +1,129 @@
+{
+ "exercicio": "arrumar",
+ "mesas": 20,
+ "limpas": "20",
+ "taxa": 1.0,
+ "robo_concorda_com_a_fisica": "20",
+ "detalhe": [
+  {
+   "mesa": 0,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 1,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 2,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 3,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 4,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 5,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 6,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 7,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 8,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 9,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 10,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 11,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 12,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 13,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 14,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 15,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 16,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 17,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 18,
+   "pecas": 3,
+   "na_caixa": 3,
+   "robo_disse_limpa": true
+  },
+  {
+   "mesa": 19,
+   "pecas": 4,
+   "na_caixa": 4,
+   "robo_disse_limpa": true
+  }
+ ]
+}

@@ -261,6 +261,28 @@
   <figure style="margin:18px 0 0;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><img src="../assets/quatro-cameras.jpg" alt="The four cameras of the scene: overview, top, front and wrist" loading="lazy" style="width:100%;display:block"></figure>
 </div></section>
 
+<section id="exercicios"><div class="wrap">
+  <span class="chip">Booth exercises</span>
+  <h2>Discover, tidy up, and obey, all by looking through the camera</h2>
+  <p class="sub">Three activities for visitors at the booth. The arm sees the table through an overhead camera, without reading the pieces' positions from the physics, and decides on its own what to do. Measured on the twin on 10/19/2026.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🦾 1. Find the odd one out</h3><p>Four pieces, one different in color or shape. The robot looks, says which one it is and why, puts it in the box, and celebrates.</p><p><b>20/20</b> random tables.</p><pre><span class="k">./r2s.py descobrir</span> -n 20</pre></div>
+    <div class="card"><h3>🦾 2. Cleanup order</h3><p>Everything outside the box goes into the box. After each piece it looks again; if one falls off the table, it says so instead of saying "clean".</p><p><b>20/20</b> tables cleaned, checked by the physics.</p><pre><span class="k">./r2s.py arrumar</span> -n 20</pre></div>
+    <div class="card"><h3>🦾 3. Talk to the robot</h3><p>"Pick up the red cube", "where's the blue ball?", "tidy up the table", "say goodbye". If the piece isn't on the table, it says it doesn't see it and stays still. For now the robot understands Brazilian Portuguese only.</p><p><b>11/11</b> test phrases.</p><pre><span class="k">./r2s.py obedecer</span> --teste</pre></div>
+  </div>
+  <div class="ex" style="margin-top:22px">
+    <figure><video src="../assets/ex-descobrir.mp4" controls muted playsinline preload="none" poster="../assets/ex-descobrir.jpg"></video><figcaption>Discover: in the corner, what the camera sees, with the odd one out marked in red.</figcaption></figure>
+    <figure><video src="../assets/ex-arrumar.mp4" controls muted playsinline preload="none" poster="../assets/ex-arrumar.jpg"></video><figcaption>Tidy up: one piece at a time, always looking again before the next one.</figcaption></figure>
+  </div>
+  <figure style="margin:18px 0 0"><video src="../assets/ex-obedecer.mp4" controls muted playsinline preload="none" poster="../assets/ex-obedecer.jpg"></video><figcaption>Conversation: what do you see, pick up the red cube, point at the blue ball, where's the orange ball (there isn't one), tidy up the table, say goodbye.</figcaption></figure>
+  <div class="tblw" style="margin-top:22px"><table class="tbl">
+    <tr><th>Measure</th><th>Result</th></tr>
+    <tr><td>Vision vs. physics, 20 tables, 70 pieces</td><td>mean error 1.1 mm (max. 2.1 mm); color and shape 70/70</td></tr>
+    <tr><td>Hearing: synthetic voice → local Whisper → phrase</td><td>6–7 out of 8 (small); a short greeting is what fails most, and then the robot says "I didn't understand"</td></tr>
+  </table></div>
+  <div class="nota"><strong>Everything local:</strong> vision, phrase understanding, voice (Piper), and hearing (Whisper) run on the booth machine, with no internet. Setup, piece colors, and real camera calibration in <a href="https://github.com/inematds/robotica-so101/tree/main/exercicios" target="_blank" rel="noopener">exercicios/README.md</a>.</div>
+</div></section>
+
 <section id="limites"><div class="wrap">
   <span class="chip">Limits</span>
   <h2>What does not exist yet</h2>
@@ -268,7 +290,7 @@
   <div class="grid g3">
     <div class="card"><h3>Simulation only</h3><p>The real arm has not been powered on yet. The driver for the Hiwonder HX servos in LeRobot has not been confirmed yet.</p></div>
     <div class="card"><h3>Can laid down</h3><p>Laying a tall can down in a shallow tray exists in the Panda project, but has not been ported to the SO-101.</p></div>
-    <div class="card"><h3>Perfect position</h3><p>In the simulator the generator knows where each object is. In the real world, that position will come from the camera (Phase 4).</p></div>
+    <div class="card"><h3>Real camera</h3><p>In the exercises the position already comes from the camera, but from the simulator's camera. The real USB camera (calibration with 4 markers) is written and has not been tested yet (Phase 4).</p></div>
   </div>
 </div></section>
 

@@ -8,3 +8,4 @@ __pycache__/
 .venv-lerobot/
 resultados/*/episodios-imagens/
 resultados/*/lerobot/
+MUJOCO_LOG.TXT

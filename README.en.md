@@ -61,6 +61,22 @@ python3 testes/rodar.py                                         # tests (~3 min)
 .venv/bin/python ferramentas/matriz_prova.py                    # cross test: measured, ±15%, worst case
 ```
 
+## Exercises for the booth: discover, tidy up, obey
+
+Three activities for the booth, guided by an overhead camera (details in
+[`exercicios/README.md`](exercicios/README.md)); measured on the twin on 10/19/2026:
+
+| Exercise | What it does | Measured |
+|---|---|---|
+| `./r2s.py descobrir` | finds the odd piece out (different color or shape), announces it, puts it away, and celebrates | 20/20 |
+| `./r2s.py arrumar` | cleanup order: everything outside the box goes into the box, checked by the camera | 20/20 clean tables |
+| `./r2s.py obedecer` | "pick up the red cube", "where is the blue ball?", "tidy up the table", "say goodbye" | 11/11 phrases |
+
+Note: the robot currently understands Brazilian Portuguese only.
+
+Vision: average error of 1.1 mm against the physics, color and shape 70/70. Everything runs locally (no API); voice is optional
+with local Whisper (`./instalar.sh --voz`) and Piper.
+
 ## What the SO-101 twin knows (Phase 0)
 
 - Gripper straight down from 15 to 30 cm from the base, up to ~8 cm high; higher or farther, it tilts.

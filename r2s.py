@@ -10,6 +10,12 @@
   r2s.py provar    <cena.json> <plano.json> [-n 20] [--minimo 0.9] [--sem-vagas] [--var-tamanho 0.15] [--pior-caso] [--deitar]
   r2s.py tudo      <foto.jpg> <pasta> [--pedido "..."] [-n 50]
   r2s.py exportar  <pasta-episodios> <saida> [--com-falhas] [--sobrescrever]   (dataset LeRobot)
+
+Exercícios do estande (câmera de cima + braço, ver exercicios/README.md):
+  r2s.py descobrir [-n 20] [--video x.mp4] [--falar]          acha o intruso, guarda e comemora
+  r2s.py arrumar   [-n 20] [--video x.mp4] [--falar]          ordem de limpeza: tudo na caixa
+  r2s.py obedecer  [--texto "pega o cubo vermelho" ...] [--microfone] [--teste] [--video x.mp4] [--falar]
+  r2s.py visao     [-n 20]                                     mede o erro da visão contra a física
 """
 from __future__ import annotations
 
@@ -137,6 +143,60 @@ def cmd_tudo(a):
     a.pasta, a.semente, a.imagens = str(pasta / "episodios"), 0, False; cmd_episodios(a)
 
 
+def _falar(a):
+    if getattr(a, "falar", False):
+        from exercicios.voz import falar, tem_voz
+        if not tem_voz():
+            print("aviso: piper/aplay ou a voz pt_BR não encontrados; só texto")
+        return falar
+    return None
+
+
+def _relatorio(a, rel):
+    from exercicios.rodar import salvar
+    if a.relatorio:
+        salvar(rel, a.relatorio)
+        print("relatório:", a.relatorio)
+
+
+def cmd_descobrir(a):
+    from exercicios.rodar import lote_descobrir
+    r = lote_descobrir(a.n, a.semente, a.video, _falar(a))
+    print(f"descobrir: {r['acertos']}/{r['mesas']} acharam o intruso e guardaram na caixa")
+    _relatorio(a, r)
+
+
+def cmd_arrumar(a):
+    from exercicios.rodar import lote_arrumar
+    r = lote_arrumar(a.n, a.semente, a.video, _falar(a))
+    print(f"arrumar: {r['limpas']}/{r['mesas']} mesas limpas (pela física); "
+          f"o robô disse a verdade em {r['robo_concorda_com_a_fisica']}/{r['mesas']}")
+    _relatorio(a, r)
+
+
+def cmd_obedecer(a):
+    from exercicios.rodar import obedecer_uma, teste_obedecer
+    if a.teste:
+        r = teste_obedecer(a.semente, a.video)
+        print(f"obedecer: {r['acertos']}/{r['frases']} frases entendidas e feitas")
+    else:
+        ouvir = None
+        if a.microfone:
+            from exercicios.voz import ouvir as _ouvir
+            ouvir = lambda: _ouvir(a.segundos, a.modelo_voz)  # noqa: E731
+            print("Fale um pedido por vez. Para encerrar: \"tchau robô\".")
+        if not a.texto and not ouvir:
+            raise SystemExit("use --texto \"pega o cubo vermelho\", --microfone ou --teste")
+        r = obedecer_uma(a.texto or [], a.semente, a.video, _falar(a), ouvir)
+    _relatorio(a, r)
+
+
+def cmd_visao(a):
+    from exercicios.medir_visao import medir
+    for k, v in medir(a.n, a.semente, a.foto).items():
+        print(f"{k:18s} {v}")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     s = p.add_subparsers(dest="cmd", required=True)
@@ -184,6 +244,23 @@ def main():
     x.add_argument("--modelo", default=m); x.add_argument("--motor", choices=["codex", "claude", "gemini", "openrouter"], default="codex"); x.add_argument("--esforco", choices=["low", "medium", "high", "xhigh", "max"], help="esforço de raciocínio (codex/claude; padrão do CLI)"); x.add_argument("-n", type=int, default=50)
     x.add_argument("--largura", type=int, default=1280); x.add_argument("--altura", type=int, default=720)
     x.set_defaults(f=cmd_tudo)
+
+    def exerc(nome, f, n=20):
+        x = s.add_parser(nome)
+        x.add_argument("-n", type=int, default=n); x.add_argument("--semente", type=int, default=0)
+        x.add_argument("--video", help="grava a 1ª mesa em MP4"); x.add_argument("--falar", action="store_true")
+        x.add_argument("--relatorio", help="salva o relatório em JSON"); x.set_defaults(f=f)
+        return x
+    exerc("descobrir", cmd_descobrir)
+    exerc("arrumar", cmd_arrumar)
+    x = exerc("obedecer", cmd_obedecer)
+    x.add_argument("--texto", action="append", help="frase do pedido (pode repetir)")
+    x.add_argument("--microfone", action="store_true"); x.add_argument("--segundos", type=float, default=4.0)
+    x.add_argument("--modelo-voz", default="small", help="Whisper local: small (rápido) ou medium (erra menos)")
+    x.add_argument("--teste", action="store_true", help="11 frases fixas, cada uma numa mesa nova")
+    x.set_defaults(semente=3)
+    x = s.add_parser("visao"); x.add_argument("-n", type=int, default=20); x.add_argument("--semente", type=int, default=0)
+    x.add_argument("--foto", help="salva a 1ª foto com o que a visão achou"); x.set_defaults(f=cmd_visao)
 
     a = p.parse_args()
     if getattr(a, "esforco", None):

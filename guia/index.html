@@ -261,6 +261,28 @@
   <figure style="margin:18px 0 0;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><img src="assets/quatro-cameras.jpg" alt="As quatro câmeras da cena: geral, cima, frente e pulso" loading="lazy" style="width:100%;display:block"></figure>
 </div></section>
 
+<section id="exercicios"><div class="wrap">
+  <span class="chip">Exercícios do estande</span>
+  <h2>Descobrir, arrumar e obedecer, olhando pela câmera</h2>
+  <p class="sub">Três atividades para quem passa pelo estande. O braço vê a mesa por uma câmera de cima, sem ler a posição das peças na física, e decide sozinho o que fazer. Medido no gêmeo em 19/10/2026.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🦾 1. Descobrir o intruso</h3><p>Quatro peças, uma diferente na cor ou na forma. O robô olha, diz qual é e por quê, guarda na caixa e comemora.</p><p><b>20/20</b> mesas sorteadas.</p><pre><span class="k">./r2s.py descobrir</span> -n 20</pre></div>
+    <div class="card"><h3>🦾 2. Ordem de limpeza</h3><p>Tudo que estiver fora da caixa vai para a caixa. Depois de cada peça ele olha de novo; se uma cair da mesa, ele avisa em vez de dizer "limpo".</p><p><b>20/20</b> mesas limpas, conferido pela física.</p><pre><span class="k">./r2s.py arrumar</span> -n 20</pre></div>
+    <div class="card"><h3>🦾 3. Fale com o robô</h3><p>"Pega o cubo vermelho", "cadê a bola azul?", "arruma a mesa", "dá tchau". Se a peça não está na mesa, ele diz que não vê e fica parado.</p><p><b>11/11</b> frases do teste.</p><pre><span class="k">./r2s.py obedecer</span> --teste</pre></div>
+  </div>
+  <div class="ex" style="margin-top:22px">
+    <figure><video src="assets/ex-descobrir.mp4" controls muted playsinline preload="none" poster="assets/ex-descobrir.jpg"></video><figcaption>Descobrir: no canto, o que a câmera vê, com o intruso marcado em vermelho.</figcaption></figure>
+    <figure><video src="assets/ex-arrumar.mp4" controls muted playsinline preload="none" poster="assets/ex-arrumar.jpg"></video><figcaption>Arrumar: uma peça por vez, sempre olhando de novo antes da próxima.</figcaption></figure>
+  </div>
+  <figure style="margin:18px 0 0"><video src="assets/ex-obedecer.mp4" controls muted playsinline preload="none" poster="assets/ex-obedecer.jpg"></video><figcaption>Conversa: o que você vê, pega o cubo vermelho, aponta a bola azul, cadê a bola laranja (não tem), arruma a mesa, dá tchau.</figcaption></figure>
+  <div class="tblw" style="margin-top:22px"><table class="tbl">
+    <tr><th>Medida</th><th>Resultado</th></tr>
+    <tr><td>Visão × física, 20 mesas, 70 peças</td><td>erro médio 1,1 mm (máx. 2,1 mm); cor e forma 70/70</td></tr>
+    <tr><td>Ouvido: voz sintética → Whisper local → frase</td><td>6–7 de 8 (small); saudação curta é o que mais erra, e aí o robô diz "não entendi"</td></tr>
+  </table></div>
+  <div class="nota"><strong>Tudo local:</strong> visão, entendimento da frase, voz (Piper) e ouvido (Whisper) rodam na máquina do estande, sem internet. Montagem, cores das peças e calibração da câmera real em <a href="https://github.com/inematds/robotica-so101/tree/main/exercicios" target="_blank" rel="noopener">exercicios/README.md</a>.</div>
+</div></section>
+
 <section id="limites"><div class="wrap">
   <span class="chip">Limites</span>
   <h2>O que ainda não existe</h2>
@@ -268,7 +290,7 @@
   <div class="grid g3">
     <div class="card"><h3>Só simulação</h3><p>O braço real ainda não foi ligado. O driver dos servos Hiwonder HX no LeRobot ainda não foi confirmado.</p></div>
     <div class="card"><h3>Lata deitada</h3><p>Deitar uma lata alta numa bandeja rasa existe no projeto do Panda, mas não foi portado para o SO-101.</p></div>
-    <div class="card"><h3>Posição perfeita</h3><p>No simulador o gerador sabe onde está cada objeto. No real, essa posição vai vir da câmera (Fase 4).</p></div>
+    <div class="card"><h3>Câmera real</h3><p>Nos exercícios a posição já vem da câmera, mas da câmera do simulador. A câmera USB de verdade (calibração com 4 marcas) está escrita e ainda não foi testada (Fase 4).</p></div>
   </div>
 </div></section>
 

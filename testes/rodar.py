@@ -199,6 +199,52 @@ def _():
                 assert _longe(a, b, 0.0), (a["nome"], b["nome"])
 
 
+@caso("exercícios: visão acha cor, forma e posição (erro < 5 mm) sem ler a física")
+def _():
+    from exercicios.medir_visao import medir
+    r = medir(4, semente=11)
+    assert r["perdidos"] == 0 and r["inventados"] == 0, r
+    assert r["cor_certa"].split("/")[0] == r["cor_certa"].split("/")[1], r
+    assert r["forma_certa"].split("/")[0] == r["forma_certa"].split("/")[1], r
+    assert r["erro_medio_mm"] < 5 and r["erro_max_mm"] < 10, r
+
+
+@caso("exercícios: frases em português viram a ação certa; frase sem sentido não vira nada")
+def _():
+    from exercicios.obedecer import FRASES_TESTE, entender
+    for frase, acao, cor, forma, _ in FRASES_TESTE:
+        e = entender(frase)
+        assert (e["acao"], e["cor"], e["forma"]) == (acao, cor, forma), (frase, e)
+
+
+@caso("exercícios: descobrir acha o intruso e guarda; arrumar deixa a mesa limpa (2 mesas cada)")
+def _():
+    import contextlib
+    import io
+    from exercicios.rodar import lote_arrumar, lote_descobrir
+    with contextlib.redirect_stdout(io.StringIO()):
+        d = lote_descobrir(2, semente=21)
+        a = lote_arrumar(2, semente=22)
+    assert d["acertos"] == 2, d["detalhe"]
+    assert a["limpas"] == 2 and a["robo_concorda_com_a_fisica"] == 2, a["detalhe"]
+
+
+@caso("exercícios: pedido de peça que não está na mesa -> avisa e não mexe")
+def _():
+    import contextlib
+    import io
+    from exercicios.atividades import Sessao
+    from exercicios.mesa import montar
+    from exercicios.obedecer import executar
+    from exercicios.rodar import mesa_teste
+    m, d = montar(mesa_teste())
+    s = Sessao(m, d)
+    with contextlib.redirect_stdout(io.StringIO()):
+        r = executar(s, "pega a bola roxa")
+    s.fechar()
+    assert r["fez"] == "nada" and "Não vejo" in r["falas"][-1], r
+
+
 print()
 LEROBOT = RAIZ / ".venv-lerobot/bin/python"
 if not LEROBOT.exists():

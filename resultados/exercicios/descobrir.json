@@ -1,0 +1,168 @@
+{
+ "exercicio": "descobrir",
+ "mesas": 20,
+ "acertos": 20,
+ "taxa": 1.0,
+ "detalhe": [
+  {
+   "mesa": 0,
+   "intrusa": "p2_bola_azul",
+   "regra": "cor",
+   "escolheu": "p2_bola_azul",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 1,
+   "intrusa": "p3_bola_laranja",
+   "regra": "cor",
+   "escolheu": "p3_bola_laranja",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 2,
+   "intrusa": "p2_bola_roxo",
+   "regra": "forma",
+   "escolheu": "p2_bola_roxo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 3,
+   "intrusa": "p2_bola_roxo",
+   "regra": "forma",
+   "escolheu": "p2_bola_roxo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 4,
+   "intrusa": "p0_cubo_roxo",
+   "regra": "cor",
+   "escolheu": "p0_cubo_roxo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 5,
+   "intrusa": "p2_cubo_verde",
+   "regra": "cor",
+   "escolheu": "p2_cubo_verde",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 6,
+   "intrusa": "p0_bola_amarelo",
+   "regra": "cor",
+   "escolheu": "p0_bola_amarelo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 7,
+   "intrusa": "p0_bola_vermelho",
+   "regra": "forma",
+   "escolheu": "p0_bola_vermelho",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 8,
+   "intrusa": "p1_bola_laranja",
+   "regra": "forma",
+   "escolheu": "p1_bola_laranja",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 9,
+   "intrusa": "p0_bola_verde",
+   "regra": "forma",
+   "escolheu": "p0_bola_verde",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 10,
+   "intrusa": "p3_cubo_verde",
+   "regra": "cor",
+   "escolheu": "p3_cubo_verde",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 11,
+   "intrusa": "p0_cubo_vermelho",
+   "regra": "forma",
+   "escolheu": "p0_cubo_vermelho",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 12,
+   "intrusa": "p2_cubo_amarelo",
+   "regra": "forma",
+   "escolheu": "p2_cubo_amarelo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 13,
+   "intrusa": "p3_cubo_vermelho",
+   "regra": "forma",
+   "escolheu": "p3_cubo_vermelho",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 14,
+   "intrusa": "p0_bola_verde",
+   "regra": "forma",
+   "escolheu": "p0_bola_verde",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 15,
+   "intrusa": "p1_bola_laranja",
+   "regra": "forma",
+   "escolheu": "p1_bola_laranja",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 16,
+   "intrusa": "p2_cubo_roxo",
+   "regra": "cor",
+   "escolheu": "p2_cubo_roxo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 17,
+   "intrusa": "p0_cubo_vermelho",
+   "regra": "cor",
+   "escolheu": "p0_cubo_vermelho",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 18,
+   "intrusa": "p2_bola_vermelho",
+   "regra": "forma",
+   "escolheu": "p2_bola_vermelho",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  },
+  {
+   "mesa": 19,
+   "intrusa": "p3_bola_roxo",
+   "regra": "cor",
+   "escolheu": "p3_bola_roxo",
+   "na_caixa": true,
+   "motivo": "objeto dentro do destino"
+  }
+ ]
+}

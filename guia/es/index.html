@@ -261,6 +261,28 @@
   <figure style="margin:18px 0 0;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><img src="../assets/quatro-cameras.jpg" alt="Las cuatro cámaras de la escena: general, arriba, frente y muñeca" loading="lazy" style="width:100%;display:block"></figure>
 </div></section>
 
+<section id="exercicios"><div class="wrap">
+  <span class="chip">Ejercicios del stand</span>
+  <h2>Descubrir, ordenar y obedecer, mirando por la cámara</h2>
+  <p class="sub">Tres actividades para quienes pasan por el stand. El brazo ve la mesa con una cámara desde arriba, sin leer la posición de las piezas en la física, y decide solo qué hacer. Medido en el gemelo el 19/10/2026.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🦾 1. Descubrir al intruso</h3><p>Cuatro piezas, una distinta en color o en forma. El robot mira, dice cuál es y por qué, la guarda en la caja y lo celebra.</p><p><b>20/20</b> mesas sorteadas.</p><pre><span class="k">./r2s.py descobrir</span> -n 20</pre></div>
+    <div class="card"><h3>🦾 2. Orden de limpieza</h3><p>Todo lo que esté fuera de la caja va a la caja. Después de cada pieza vuelve a mirar; si una cae de la mesa, avisa en vez de decir "limpio".</p><p><b>20/20</b> mesas limpias, verificado por la física.</p><pre><span class="k">./r2s.py arrumar</span> -n 20</pre></div>
+    <div class="card"><h3>🦾 3. Háblale al robot</h3><p>"Toma el cubo rojo", "¿dónde está la bola azul?", "ordena la mesa", "di adiós". Si la pieza no está en la mesa, dice que no la ve y se queda quieto. Por ahora el robot entiende solo portugués de Brasil.</p><p><b>11/11</b> frases de la prueba.</p><pre><span class="k">./r2s.py obedecer</span> --teste</pre></div>
+  </div>
+  <div class="ex" style="margin-top:22px">
+    <figure><video src="../assets/ex-descobrir.mp4" controls muted playsinline preload="none" poster="../assets/ex-descobrir.jpg"></video><figcaption>Descubrir: en la esquina, lo que ve la cámara, con el intruso marcado en rojo.</figcaption></figure>
+    <figure><video src="../assets/ex-arrumar.mp4" controls muted playsinline preload="none" poster="../assets/ex-arrumar.jpg"></video><figcaption>Ordenar: una pieza a la vez, siempre mirando de nuevo antes de la siguiente.</figcaption></figure>
+  </div>
+  <figure style="margin:18px 0 0"><video src="../assets/ex-obedecer.mp4" controls muted playsinline preload="none" poster="../assets/ex-obedecer.jpg"></video><figcaption>Conversación: qué ves, toma el cubo rojo, señala la bola azul, dónde está la bola naranja (no hay), ordena la mesa, di adiós.</figcaption></figure>
+  <div class="tblw" style="margin-top:22px"><table class="tbl">
+    <tr><th>Medida</th><th>Resultado</th></tr>
+    <tr><td>Visión × física, 20 mesas, 70 piezas</td><td>error medio 1,1 mm (máx. 2,1 mm); color y forma 70/70</td></tr>
+    <tr><td>Oído: voz sintética → Whisper local → frase</td><td>6–7 de 8 (small); el saludo corto es lo que más falla, y entonces el robot dice "no entendí"</td></tr>
+  </table></div>
+  <div class="nota"><strong>Todo local:</strong> visión, comprensión de la frase, voz (Piper) y oído (Whisper) se ejecutan en la máquina del stand, sin internet. Montaje, colores de las piezas y calibración de la cámara real en <a href="https://github.com/inematds/robotica-so101/tree/main/exercicios" target="_blank" rel="noopener">exercicios/README.md</a>.</div>
+</div></section>
+
 <section id="limites"><div class="wrap">
   <span class="chip">Límites</span>
   <h2>Lo que todavía no existe</h2>
@@ -268,7 +290,7 @@
   <div class="grid g3">
     <div class="card"><h3>Solo simulación</h3><p>El brazo real todavía no se encendió. El driver de los servos Hiwonder HX en LeRobot aún no está confirmado.</p></div>
     <div class="card"><h3>Lata acostada</h3><p>Acostar una lata alta en una bandeja baja existe en el proyecto del Panda, pero no se portó al SO-101.</p></div>
-    <div class="card"><h3>Posición perfecta</h3><p>En el simulador, el generador sabe dónde está cada objeto. En el mundo real, esa posición vendrá de la cámara (Fase 4).</p></div>
+    <div class="card"><h3>Cámara real</h3><p>En los ejercicios la posición ya viene de la cámara, pero de la cámara del simulador. La cámara USB de verdad (calibración con 4 marcas) está escrita y todavía no fue probada (Fase 4).</p></div>
   </div>
 </div></section>
 

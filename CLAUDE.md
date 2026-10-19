@@ -15,6 +15,9 @@ Um projeto por robô: o Franka Panda continua em `~/projetos/robotica-real2sim` 
 - Kit real: servos Hiwonder HX-30HM/HX-10HM (não Feetech), carga 200 g, PLA, câmera no pulso + externa.
   **Líder em 5 V, seguidor em 12 V: trocar queima os servos.** Driver do LeRobot (`so101_follower`, Feetech)
   ainda não confirmado para os servos HX.
+- Exercícios do estande (19/10/2026): `exercicios/` — descobrir o intruso, arrumar (ordem de limpeza),
+  obedecer (frase/voz). Visão só por foto da câmera de cima; `./r2s.py descobrir|arrumar|obedecer|visao`.
+  Detalhes e números em `exercicios/README.md`. Página: eventos.inema.pro/robot (seção do estande).
 - Rodar: `./instalar.sh`; depois `./r2s.py <comando>`. Teste: `python3 testes/rodar.py`. Sempre `MUJOCO_GL=egl`.
 - Visão e plano pela assinatura (Codex `gpt-6-astra`/`gpt-6-luna`, Claude). **Nunca** chamar API paga
   (Gemini, OpenRouter...) sem autorização explícita do dono.
@@ -26,6 +29,11 @@ Um projeto por robô: o Franka Panda continua em `~/projetos/robotica-real2sim` 
 When I correct you, or you catch yourself making a mistake: before continuing, add the lesson as a one-line rule under ## Lessons, so it never happens again.
 
 ## Lessons
+
+- Visão de cima: o braço em casa tapa a mesa e é amarelo; tirar a foto na pose de foto (`exercicios/braco.FOTO`) e só olhar dentro da área de trabalho.
+- Cor por matiz MAIS PRÓXIMO (argmin), não por raio em volta de cada cor: o amarelo renderizado sai em 60°, longe do 47° chutado.
+- Garra aberta toda (11 cm) empurra a peça vizinha e a bola rola para fora da mesa: abrir só largura + 3,5 cm.
+- faster-whisper 1.2 quebra com PyAV 19 (`metadata_errors`): fixar `av<16` em requirements-voz.txt.
 
 - (herdada do Panda, NÃO vale no SO-101) comando integrado com anti-windup: o servo do SO-101 é rígido (kp ~1000) e integrar o erro medido fazia o braço oscilar; a IK roda sobre a postura comandada.
 - IK do SO-101: posição manda; inclinação da garra com peso 0,05 (cede quando não alcança), giro em torno do eixo da garra com peso 0,5; junta no limite sai do cálculo. Garra reto para baixo só até ~8 cm de altura a 15–30 cm da base.

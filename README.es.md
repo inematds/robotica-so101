@@ -61,6 +61,22 @@ python3 testes/rodar.py                                         # pruebas (~3 mi
 .venv/bin/python ferramentas/matriz_prova.py                    # prueba cruzada: medida, ±15%, peor caso
 ```
 
+## Ejercicios del stand: descubrir, ordenar, obedecer
+
+Tres actividades para el stand, guiadas por una cámara cenital (detalles en
+[`exercicios/README.md`](exercicios/README.md)); medidas en el gemelo el 19/10/2026:
+
+| Ejercicio | Qué hace | Medido |
+|---|---|---|
+| `./r2s.py descobrir` | encuentra la pieza intrusa (color o forma distinta), la anuncia, la guarda y celebra | 20/20 |
+| `./r2s.py arrumar` | orden de limpieza: todo lo que está fuera de la caja va a la caja, verificando con la cámara | 20/20 mesas limpias |
+| `./r2s.py obedecer` | "toma el cubo rojo", "¿dónde está la bola azul?", "ordena la mesa", "di adiós" | 11/11 frases |
+
+Por ahora el robot entiende solo portugués de Brasil, por lo que las frases de `./r2s.py obedecer` deben decirse en ese idioma.
+
+Visión: error medio de 1,1 mm contra la física, color y forma 70/70. Todo local (sin API); voz opcional
+con Whisper local (`./instalar.sh --voz`) y Piper.
+
 ## Lo que sabe el gemelo del SO-101 (Fase 0)
 
 - Pinza recta hacia abajo de 15 a 30 cm de la base, hasta ~8 cm de altura; más alto o más lejos, se inclina.
