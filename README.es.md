@@ -77,6 +77,8 @@ Por ahora el robot entiende solo portugués de Brasil, por lo que las frases de 
 Visión: error medio de 1,1 mm contra la física, color y forma 70/70. Todo local (sin API); voz opcional
 con Whisper local (`./instalar.sh --voz`) y Piper.
 
+La **lista de lo que necesitamos tener en el stand** (brazo, fuentes, mesa, caja, piezas, cámara, luz, micrófono) y las **opciones de configuración** (línea de comandos, variables y valores en el código) están en [`exercicios/README.md`](exercicios/README.md#lista-do-que-precisamos-ter-no-estande) (en portugués).
+
 ## Lo que sabe el gemelo del SO-101 (Fase 0)
 
 - Pinza recta hacia abajo de 15 a 30 cm de la base, hasta ~8 cm de altura; más alto o más lejos, se inclina.

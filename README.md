@@ -75,6 +75,10 @@ Três atividades para o estande, guiadas por uma câmera de cima (detalhes em
 Visão: erro médio de 1,1 mm contra a física, cor e forma 70/70. Tudo local (sem API); voz opcional
 com Whisper local (`./instalar.sh --voz`) e Piper.
 
+A **lista do que precisamos ter no estande** (braço, fontes, mesa, caixa, peças, câmera, luz, microfone)
+e as **opções de configuração** (linha de comando, variáveis e valores no código) estão em
+[`exercicios/README.md`](exercicios/README.md#lista-do-que-precisamos-ter-no-estande).
+
 ## O que o gêmeo do SO-101 sabe (Fase 0)
 
 - Garra reto para baixo de 15 a 30 cm da base, até ~8 cm de altura; mais alto ou mais longe, inclina.

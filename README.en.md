@@ -77,6 +77,8 @@ Note: the robot currently understands Brazilian Portuguese only.
 Vision: average error of 1.1 mm against the physics, color and shape 70/70. Everything runs locally (no API); voice is optional
 with local Whisper (`./instalar.sh --voz`) and Piper.
 
+The **list of what we need to have at the booth** (arm, power supplies, table, box, pieces, camera, light, microphone) and the **configuration options** (command line, variables, and values in the code) are in [`exercicios/README.md`](exercicios/README.md#lista-do-que-precisamos-ter-no-estande) (in Portuguese).
+
 ## What the SO-101 twin knows (Phase 0)
 
 - Gripper straight down from 15 to 30 cm from the base, up to ~8 cm high; higher or farther, it tilts.
